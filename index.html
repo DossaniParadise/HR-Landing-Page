@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DPM HR Landing Page</title>
+
+  <!-- =========================================================================
+       1. CONFIGURATION SECTION
+       ========================================================================= -->
+  <script>
+    // --- EASY-EDIT CONFIGURATION ---
+    // A non-developer can update this portal in under five minutes.
+    // To change links, titles, or dates, edit the variables defined below.
+
+    // Target URLs for individual resource cards.
+    // Paste your active links between the matching quotes (e.g., "https://dpm.onedrive.com/...").
+    const LINKS = {
+      onedrive: "https://alsinvestments-my.sharepoint.com/:f:/g/personal/hr_dossaniparadise_com/IgBCqJtkjxWVRazMbSmoWbmgAWrIw_89X3ssAlHsK4ZBDlg",
+      termination: "https://dossaniparadise.github.io/terminationform/",
+      resignation: "https://dossaniparadise.github.io/resignationform/",
+      counseling: "https://dossaniparadise.github.io/counselingform/",
+      future1: "",
+      future2: ""
+    };
+
+    // Subtitle displayed directly beneath the page title
+    const PAGE_SUBTITLE = "Human Resources Resources and Quick Links";
+
+    // Text displayed in the instructions / announcements container below the header
+    const ANNOUNCEMENT_TEXT = "Welcome to the DPM HR resource hub. Below you will find quick access to our standard HR documents, forms, and cloud storage folders. To use a resource, simply click its card. If a link has not been configured yet, you will receive a notification.";
+
+    // Footer copyright or identifier label
+    const FOOTER_TEXT = "DPM HR Resources";
+
+    // Value representing the modification / update date in the footer
+    const LAST_UPDATED = "June 2026";
+    
+    // --- END OF CONFIGURATION SECTION ---
+  </script>
+
+  <!-- =========================================================================
+       2. CSS (STYLING STYLE BLOCK)
+       ========================================================================= -->
+  <style>
+    /* Design tokens matching a clean, timeless corporate HR aesthetic */
+    :root {
+      --bg-canvas: #f8fafc;
+      --bg-card: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-slate: #e2e8f0;
+      --border-accent: #cbd5e1;
+      --primary-blue: #3b82f6;
+      --primary-hover: #1d4ed8;
+      
+      /* Vibrant but professional soft background colors for individual card icons */
+      --blue-tint: #eff6ff;
+      --red-tint: #fef2f2;
+      --amber-tint: #fffbeb;
+      --green-tint: #f0fdf4;
+      --gray-tint: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Core container centering */
+    .container {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 3.5rem 1.75rem;
+    }
+
+    /* Header styling */
+    header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: #f1f5f9;
+      color: #334155;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      border: 1px solid #e2e8f0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Highlight panel for announcements / instructions */
+    .announcement-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-slate);
+      border-left: 4px solid var(--primary-blue);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      max-width: 780px;
+      margin: 2.25rem auto 0 auto;
+      text-align: left;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    }
+
+    .announcement-header {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .announcement-svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: var(--primary-blue);
+      stroke-width: 2.25;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .announcement-body {
+      font-size: 0.925rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Grid of cards with fluid column sizing */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+    }
+
+    /* Desktop grid: 3 items per row */
+    @media (min-width: 1024px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    /* Tablet grid: 2 items per row */
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* Individual Card Styles */
+    .card-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-slate);
+      border-radius: 12px;
+      padding: 1.85rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                  box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                  border-color 0.15s ease;
+      min-height: 230px;
+    }
+
+    .card-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+      border-color: var(--border-accent);
+    }
+
+    .card-item:focus-visible {
+      outline: 2px dashed var(--primary-blue);
+      outline-offset: 4px;
+    }
+
+    .card-item:active {
+      transform: translateY(-1px);
+    }
+
+    /* Icon display setup */
+    .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .icon-wrapper-onedrive { background-color: var(--blue-tint); }
+    .icon-wrapper-termination { background-color: var(--red-tint); }
+    .icon-wrapper-resignation { background-color: var(--amber-tint); }
+    .icon-wrapper-counseling { background-color: var(--green-tint); }
+    .icon-wrapper-future { background-color: var(--gray-tint); }
+
+    .card-heading {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: auto;
+    }
+
+    .card-footer-action {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 1.5rem;
+      padding-top: 0.5rem;
+      transition: color 0.15s ease;
+    }
+
+    .card-item:hover .card-footer-action {
+      color: var(--primary-blue);
+    }
+
+    .arrow-icon-svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-item:hover .arrow-icon-svg {
+      transform: translateX(3px);
+    }
+
+    /* Footer styling */
+    footer {
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-slate);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    @media (min-width: 640px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+
+    .footer-left {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .footer-right {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    .date-indicator {
+      font-weight: 600;
+      color: var(--text-secondary);
+      background-color: #f1f5f9;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.25rem;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Modal dialog styling */
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .backdrop.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 2.25rem 2rem;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      transform: scale(0.96);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid var(--border-slate);
+    }
+
+    .backdrop.visible .modal {
+      transform: scale(1);
+    }
+
+    .modal-symbol {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-color: #fef3c7;
+      color: #d97706;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.65rem;
+      margin: 0 auto 1.25rem auto;
+      border: 1.5px solid #fde68a;
+    }
+
+    .modal-hdr {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    .modal-text-content {
+      font-size: 0.925rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1.75rem;
+    }
+
+    .modal-text-content strong {
+      color: var(--text-primary);
+    }
+
+    .modal-dismiss-button {
+      display: inline-block;
+      width: 100%;
+      background-color: var(--text-primary);
+      color: #ffffff;
+      font-size: 0.925rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem 0;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .modal-dismiss-button:hover {
+      background-color: #1e293b;
+    }
+
+    .modal-dismiss-button:active {
+      background-color: #0d121d;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       3. HTML (LAYOUT STRUCTURE)
+       ========================================================================= -->
+  <div class="container">
+    
+    <!-- Portal Header -->
+    <header>
+      <div class="badge">Internal Staff Directory</div>
+      <h1 id="header-portal-title">DPM HR Landing Page</h1>
+      <p id="header-portal-subtitle" class="subtitle"></p>
+      
+      <!-- Informational / Announcement Panel -->
+      <div class="announcement-box">
+        <div class="announcement-header">
+          <svg class="announcement-svg" viewBox="0 0 24 24">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+            <path d="M12 16v-4"></path>
+            <path d="M12 8h.01"></path>
+          </svg>
+          Instructions & Guidance
+        </div>
+        <p id="announcement-panel-text" class="announcement-body"></p>
+      </div>
+    </header>
+
+    <!-- Interactive Grid Area -->
+    <main class="grid">
+      
+      <!-- Card #1: OneDrive -->
+      <div class="card-item" tabindex="0" onclick="handleCardInteraction('onedrive')" id="box-onedrive">
+        <div>
+          <div class="icon-wrapper icon-wrapper-onedrive">☁️</div>
+          <h2 class="card-heading">OneDrive</h2>
+          <p class="card-description">Access DPM HR shared storage folders, company handbook guidelines, internal corporate forms, templates, and employee policy documents.</p>
+        </div>
+        <div class="card-footer-action">
+          <span>Open Link</span>
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- Card #2: Termination Form -->
+      <div class="card-item" tabindex="0" onclick="handleCardInteraction('termination')" id="box-termination">
+        <div>
+          <div class="icon-wrapper icon-wrapper-termination">📄</div>
+          <h2 class="card-heading">Termination Form</h2>
+          <p class="card-description">Standard template process forms and exit clearance checklists required for recording formal employee separations and offboarding transition logs.</p>
+        </div>
+        <div class="card-footer-action">
+          <span>Open Link</span>
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- Card #3: Resignation Form -->
+      <div class="card-item" tabindex="0" onclick="handleCardInteraction('resignation')" id="box-resignation">
+        <div>
+          <div class="icon-wrapper icon-wrapper-resignation">📝</div>
+          <h2 class="card-heading">Resignation Form</h2>
+          <p class="card-description">Official submission form and formal exit procedures designated for handling voluntary resignation submissions and record compilation.</p>
+        </div>
+        <div class="card-footer-action">
+          <span>Open Link</span>
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- Card #4: Counseling Form -->
+      <div class="card-item" tabindex="0" onclick="handleCardInteraction('counseling')" id="box-counseling">
+        <div>
+          <div class="icon-wrapper icon-wrapper-counseling">📋</div>
+          <h2 class="card-heading">Counseling Form</h2>
+          <p class="card-description">Active performance documentation patterns, goal metrics, coaching cards, and constructive feedback questionnaires for staff development reviews.</p>
+        </div>
+        <div class="card-footer-action">
+          <span>Open Link</span>
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- Card #5: Reserved Slot 1 -->
+      <div class="card-item" tabindex="0" onclick="handleCardInteraction('future1')" id="box-future1">
+        <div>
+          <div class="icon-wrapper icon-wrapper-future">⭐</div>
+          <h2 class="card-heading">Reserved for Future Resource</h2>
+          <p class="card-description">This visual slot is reserved intentionally to hold upcoming documents, external directories, employee portals, or training guides as they release.</p>
+        </div>
+        <div class="card-footer-action">
+          <span>Open Link</span>
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <!-- Card #6: Reserved Slot 2 -->
+      <div class="card-item" tabindex="0" onclick="handleCardInteraction('future2')" id="box-future2">
+        <div>
+          <div class="icon-wrapper icon-wrapper-future">⭐</div>
+          <h2 class="card-heading">Reserved for Future Resource</h2>
+          <p class="card-description">This visual slot is reserved intentionally for future organizational changes, benefits databases, directory grids, or external support services.</p>
+        </div>
+        <div class="card-footer-action">
+          <span>Open Link</span>
+          <svg class="arrow-icon-svg" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer Area -->
+    <footer>
+      <div class="footer-left" id="footer-branding-label"></div>
+      <div class="footer-right">
+        Last Updated: <span class="date-indicator" id="footer-date-tag"></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Custom Alert Modal Dialog (Avoids blocking window.alert threads inside sandboxed frame blocks) -->
+  <div id="alert-modal-overlay" class="backdrop" aria-hidden="true" role="none">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-alert-title-id">
+      <div class="modal-symbol" aria-hidden="true">⚠️</div>
+      <h3 class="modal-hdr" id="modal-alert-title-id">Link Not Configured Yet</h3>
+      <p class="modal-text-content">
+        The destination link for <strong id="modal-target-resource-name">this resource</strong> is not configured yet. Please check back later or contact your HR administrator.
+      </p>
+      <button class="modal-dismiss-button" onclick="closeNotificationModal()">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       4. JAVASCRIPT (DOM BINDING & INTERACTION LOGIC)
+       ========================================================================= -->
+  <script>
+    // Dynamically update headings, dates, and labels from variables declared in section 1 above
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("header-portal-subtitle").textContent = PAGE_SUBTITLE;
+      document.getElementById("announcement-panel-text").textContent = ANNOUNCEMENT_TEXT;
+      document.getElementById("footer-branding-label").textContent = FOOTER_TEXT;
+      document.getElementById("footer-date-tag").textContent = LAST_UPDATED;
+
+      // Handle keyboard triggering for focus accessible users
+      const cards = document.querySelectorAll(".card-item");
+      cards.forEach(card => {
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+    });
+
+    /**
+     * Intercepts card clicks, launching a clean new browser tab on present links,
+     * and displaying an accessible modal notice for unassigned ones.
+     */
+    function handleCardInteraction(key) {
+      const url = LINKS[key];
+      
+      if (url && url.trim() !== "") {
+        // Run safely under general external frame policies
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        const titleOfCard = resolveResourceTitle(key);
+        displayModalNotification(titleOfCard);
+      }
+    }
+
+    // Resolves clean text from item keys to specify which slot is unconfigured
+    function resolveResourceTitle(key) {
+      const titleMapping = {
+        onedrive: "OneDrive",
+        termination: "Termination Form",
+        resignation: "Resignation Form",
+        counseling: "Counseling Form",
+        future1: "Future Resource 1",
+        future2: "Future Resource 2"
+      };
+      return titleMapping[key] || "HR Resource";
+    }
+
+    // Displays the modal window
+    function displayModalNotification(resourceTitle) {
+      const windowBackdrop = document.getElementById("alert-modal-overlay");
+      const labelContainer = document.getElementById("modal-target-resource-name");
+      
+      if (windowBackdrop && labelContainer) {
+        labelContainer.textContent = resourceTitle;
+        windowBackdrop.classList.add("visible");
+        windowBackdrop.setAttribute("aria-hidden", "false");
+        
+        // Return focus to the dismiss trigger for optimal accessibility
+        const dismissBtn = windowBackdrop.querySelector(".modal-dismiss-button");
+        if (dismissBtn) {
+          dismissBtn.focus();
+        }
+      }
+    }
+
+    // Conceals the modal window
+    function closeNotificationModal() {
+      const windowBackdrop = document.getElementById("alert-modal-overlay");
+      if (windowBackdrop) {
+        windowBackdrop.classList.remove("visible");
+        windowBackdrop.setAttribute("aria-hidden", "true");
+      }
+    }
+
+    // Exit overlay when clicking outside active dimensions of card
+    window.addEventListener("click", (e) => {
+      const overlay = document.getElementById("alert-modal-overlay");
+      if (e.target === overlay) {
+        closeNotificationModal();
+      }
+    });
+
+    // Dismiss trigger on Escape key sequence
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeNotificationModal();
+      }
+    });
+  </script>
+</body>
+</html>
