@@ -500,6 +500,7 @@
   .admin-item-row .text-input { margin-bottom: 0; }
   .item-name-input { flex: 1.1; }
   .item-url-input { flex: 1.4; }
+  .item-ext-select { flex: 0 0 130px; margin-bottom: 0; }
 
   .add-item-btn {
     background: none; border: 1px dashed var(--border-accent);
@@ -687,7 +688,7 @@
           const hasUrl = doc.url && doc.url.trim() !== "";
           row.innerHTML = `
             <span class="doc-name">${escapeHtml(doc.name)}</span>
-            ${hasUrl ? buildDocLinks(doc.url) : `<span class="doc-unset">Not configured</span>`}
+            ${hasUrl ? buildDocLinks(doc) : `<span class="doc-unset">Not configured</span>`}
           `;
           panelInner.appendChild(row);
         });
@@ -742,7 +743,18 @@
   // Microsoft's Office Online Viewer renders them read-only in the browser
   // instead -- with slide-by-slide navigation for PowerPoint -- as long as
   // the file URL is publicly reachable (Filestack URLs are, by default).
+  //
+  // Filestack's URLs (e.g. https://cdn.filestackcontent.com/abc123) don't
+  // contain the original filename or extension, so we can't reliably detect
+  // the file type from the URL alone. Instead, the extension is captured and
+  // stored on the item (doc.ext) at upload time, or set manually via the
+  // "File type" dropdown in the admin panel for pasted links.
   const OFFICE_EXTENSIONS = ["ppt", "pptx", "doc", "docx", "xls", "xlsx"];
+
+  function extFromFilename(name) {
+    const dot = (name || "").lastIndexOf(".");
+    return dot === -1 ? "" : name.slice(dot + 1).toLowerCase();
+  }
 
   function getFileExtension(url) {
     try {
@@ -755,8 +767,15 @@
     }
   }
 
-  function buildDocLinks(url) {
-    const ext = getFileExtension(url);
+  function resolveExt(doc) {
+    if (doc.ext === "other") return "";           // explicit override: always direct link
+    if (doc.ext && doc.ext.trim()) return doc.ext.trim().toLowerCase();
+    return getFileExtension(doc.url || "");        // best-effort fallback for older/manual links
+  }
+
+  function buildDocLinks(doc) {
+    const url = doc.url;
+    const ext = resolveExt(doc);
     const arrow = `<svg class="doc-link-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
 
     if (OFFICE_EXTENSIONS.includes(ext)) {
@@ -888,6 +907,22 @@
     });
   }
 
+  function buildExtSelect(catIdx, itemIdx, doc) {
+    const current = doc.ext || "";
+    const options = [
+      ["", "Auto-detect"],
+      ["pptx", "PowerPoint"],
+      ["xlsx", "Excel"],
+      ["docx", "Word"],
+      ["pdf", "PDF"],
+      ["other", "Other / direct link"]
+    ];
+    const optionsHtml = options.map(([val, label]) =>
+      `<option value="${val}" ${val === current ? "selected" : ""}>${label}</option>`
+    ).join("");
+    return `<select class="text-input item-ext-select" data-cat="${catIdx}" data-item="${itemIdx}" data-field="ext" onchange="updateItemField(this)">${optionsHtml}</select>`;
+  }
+
   function buildItemRow(catIdx, itemIdx, doc) {
     const row = document.createElement("div");
     row.className = "admin-item-row";
@@ -895,6 +930,7 @@
     row.innerHTML = `
       <input class="text-input item-name-input" value="${escapeAttr(doc.name)}" placeholder="Document name" data-cat="${catIdx}" data-item="${itemIdx}" data-field="name" oninput="updateItemField(this)">
       <input class="text-input item-url-input" value="${escapeAttr(doc.url)}" placeholder="https://... or click Upload" data-cat="${catIdx}" data-item="${itemIdx}" data-field="url" oninput="updateItemField(this)">
+      ${buildExtSelect(catIdx, itemIdx, doc)}
       <button class="btn-upload ${hasUrl ? "linked" : ""}" onclick="uploadForItem(${catIdx}, ${itemIdx})" title="Upload a file for this document">${hasUrl ? "✓ Replace" : "📎 Upload"}</button>
       <button class="btn-danger" onclick="removeItem(${catIdx}, ${itemIdx})" title="Remove">✕</button>
     `;
@@ -953,6 +989,7 @@
         const f = res.filesUploaded && res.filesUploaded[0];
         if (!f) return;
         CONFIG.categories[catIdx].items[itemIdx].url = f.url;
+        CONFIG.categories[catIdx].items[itemIdx].ext = extFromFilename(f.filename);
         if (!CONFIG.categories[catIdx].items[itemIdx].name ||
             CONFIG.categories[catIdx].items[itemIdx].name === "New Document") {
           CONFIG.categories[catIdx].items[itemIdx].name = stripExtension(f.filename);
@@ -976,7 +1013,11 @@
       storeTo: { path: "/hr-resources/" + catId + "/" },
       onUploadDone: (res) => {
         (res.filesUploaded || []).forEach(f => {
-          CONFIG.categories[catIdx].items.push({ name: stripExtension(f.filename), url: f.url });
+          CONFIG.categories[catIdx].items.push({
+            name: stripExtension(f.filename),
+            url: f.url,
+            ext: extFromFilename(f.filename)
+          });
         });
         populateAdminForm();
       }
