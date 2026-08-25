@@ -61,7 +61,8 @@
           "name": "Pay Change PAFs and Process",
           "url": "https://cdn.filestackcontent.com/BUOsIiBESeOGlRDtgnJi"
         }
-      ]
+      ],
+      "groups": []
     },
     {
       "id": "counseling",
@@ -93,7 +94,8 @@
           "name": "Resignation Form",
           "url": "https://dossaniparadise.github.io/resignationform/"
         }
-      ]
+      ],
+      "groups": []
     },
     {
       "id": "benefits",
@@ -125,7 +127,8 @@
           "name": "Principal Wellness Benefit Flyer",
           "url": "https://cdn.filestackcontent.com/tXT6j6yTDq215Vr0UJ2C"
         }
-      ]
+      ],
+      "groups": []
     },
     {
       "id": "training",
@@ -134,64 +137,78 @@
       "description": "Role-based training guides for C-Store and Fast Food teams.",
       "items": [
         {
-          "name": "C-Store Orientation Training (First Day)",
-          "url": ""
-        },
-        {
-          "name": "C-Store Team Member Training",
-          "url": ""
-        },
-        {
-          "name": "C-Store Shift Manager Training",
-          "url": ""
-        },
-        {
-          "name": "C-Store Assistant GM Training",
-          "url": ""
-        },
-        {
-          "name": "C-Store General Manager Training",
-          "url": ""
-        },
-        {
-          "name": "C-Store Training Guidelines",
-          "url": ""
-        },
-        {
-          "name": "Fast Food Training Guidelines",
-          "url": ""
-        },
-        {
-          "name": "Fast Food Orientation Training (First Day)",
-          "url": ""
-        },
-        {
-          "name": "Fast Food Team Member Training",
-          "url": ""
-        },
-        {
-          "name": "Fast Food Shift Manager Training",
-          "url": ""
-        },
-        {
-          "name": "Fast Food Assistant GM Training",
-          "url": ""
-        },
-        {
-          "name": "Fast Food General Manager Training",
-          "url": ""
-        },
-        {
-          "name": "Fast Food District Manager Training",
-          "url": ""
-        },
-        {
           "name": "New Management HR Essentials Training (PowerPoint)",
           "url": ""
         },
         {
           "name": "Training Summary Sheet",
           "url": ""
+        }
+      ],
+      "groups": [
+        {
+          "id": "cstore",
+          "title": "C-Store",
+          "items": [
+            {
+              "name": "C-Store Orientation Training (First Day)",
+              "url": ""
+            },
+            {
+              "name": "C-Store Team Member Training",
+              "url": ""
+            },
+            {
+              "name": "C-Store Shift Manager Training",
+              "url": ""
+            },
+            {
+              "name": "C-Store Assistant GM Training",
+              "url": ""
+            },
+            {
+              "name": "C-Store General Manager Training",
+              "url": ""
+            },
+            {
+              "name": "C-Store Training Guidelines",
+              "url": ""
+            }
+          ]
+        },
+        {
+          "id": "fastfood",
+          "title": "Fast Food",
+          "items": [
+            {
+              "name": "Fast Food Training Guidelines",
+              "url": ""
+            },
+            {
+              "name": "Fast Food Orientation Training (First Day)",
+              "url": ""
+            },
+            {
+              "name": "Fast Food Team Member Training",
+              "url": ""
+            },
+            {
+              "name": "Fast Food Shift Manager Training",
+              "url": ""
+            },
+            {
+              "name": "Fast Food Assistant GM Training",
+              "url": ""
+            },
+            {
+              "name": "Fast Food General Manager Training",
+              "url": ""
+            },
+            {
+              "name": "Fast Food District Manager Training",
+              "url": ""
+            }
+          ]
         }
       ]
     },
@@ -213,7 +230,8 @@
           "name": "Concentra Clinic Locations",
           "url": ""
         }
-      ]
+      ],
+      "groups": []
     },
     {
       "id": "performance",
@@ -237,7 +255,8 @@
           "name": "Performance Review",
           "url": "https://cdn.filestackcontent.com/xarch6XjSgHpXH9nsDz7"
         }
-      ]
+      ],
+      "groups": []
     }
   ]
 }</script>
@@ -462,6 +481,47 @@
 
   .empty-note { font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem 0.25rem; }
 
+  /* ---- Subcategories (nested accordion inside a tile) ---- */
+  .subgroup {
+    margin-top: 0.6rem;
+    border: 1px solid var(--border-slate);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fcfdfe;
+  }
+  .subgroup:first-child { margin-top: 0.25rem; }
+
+  .subgroup-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+  }
+  .subgroup-header:hover { background-color: #f8fafc; }
+  .subgroup-header:focus-visible { outline: 2px dashed var(--primary-blue); outline-offset: -2px; }
+
+  .subgroup-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); flex: 1; }
+  .subgroup-meta { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+  .subgroup-chevron {
+    width: 15px; height: 15px; flex-shrink: 0;
+    stroke: var(--text-muted); fill: none; stroke-width: 2.5;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .subgroup.open .subgroup-chevron { transform: rotate(180deg); }
+
+  .subgroup-panel { max-height: 0; overflow: hidden; transition: max-height 0.25s cubic-bezier(0.16,1,0.3,1); }
+  .subgroup-panel-inner { padding: 0.25rem 0.9rem 0.7rem 0.9rem; border-top: 1px solid var(--border-slate); }
+
+  .ungrouped-items:not(:empty) { margin-bottom: 0.35rem; }
+
   footer {
     margin-top: 4.5rem;
     padding-top: 2rem;
@@ -634,8 +694,33 @@
   }
   .add-item-btn:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
 
-  .add-item-actions { display: flex; gap: 0.5rem; margin-top: 0.4rem; }
+  .add-item-actions { display: flex; gap: 0.5rem; margin-top: 0.4rem; flex-wrap: wrap; }
   .add-item-actions .add-item-btn { margin-top: 0; }
+
+  /* ---- Admin: subcategory blocks ---- */
+  .admin-group-block {
+    border: 1px solid var(--border-slate);
+    border-left: 3px solid var(--primary-blue);
+    border-radius: 8px;
+    padding: 0.9rem;
+    margin-top: 0.85rem;
+    background-color: #fbfdff;
+  }
+  .admin-group-head { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
+  .admin-group-head .text-input { margin-bottom: 0; }
+  .group-title-input { flex: 1; font-weight: 600; }
+  .group-tag {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--primary-blue); background-color: var(--blue-tint);
+    padding: 0.25rem 0.5rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0;
+  }
+  .add-group-btn { border-color: var(--primary-blue); color: var(--primary-blue); }
+  .ungrouped-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-muted); margin: 0.5rem 0 0.4rem 0;
+  }
+  .item-move-select { flex: 0 0 120px; margin-bottom: 0; font-size: 0.8rem; }
+  .empty-group-note { font-size: 0.8rem; color: var(--text-muted); padding: 0.35rem 0.15rem; }
   .upload-new-btn { border-style: solid; border-color: var(--primary-blue); color: var(--primary-blue); background-color: var(--blue-tint); }
   .upload-new-btn:hover { background-color: #dbeafe; }
 
@@ -922,240 +1007,7 @@
       <input class="text-input" id="cfg-footer" type="text">
     </div>
 
-    <div id="admin-categories"><div class="admin-category-card"><div class="admin-cat-header-row">
-        <input class="text-input icon-field" value="💳" data-cat="0" data-field="icon" oninput="updateCategoryField(this)">
-        <input class="text-input title-field" value="Paycom Reference Tools" data-cat="0" data-field="title" oninput="updateCategoryField(this)">
-      </div><textarea class="text-area" data-cat="0" data-field="description"></textarea><div class="admin-items-list"><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Employee Guide for Paycom Self Service" placeholder="Document name" data-cat="0" data-item="0" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/0BW99d10QQqBBTmnhV1l" placeholder="https://... or click Upload" data-cat="0" data-item="0" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 0)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 0)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="I-9 List of Acceptable Documents" placeholder="Document name" data-cat="0" data-item="1" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/9Y6iHfYTTCO37BeHbonR" placeholder="https://... or click Upload" data-cat="0" data-item="1" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 1)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 1)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Leave of Absence PAF and Process" placeholder="Document name" data-cat="0" data-item="2" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/jypYqTMDQOQmW483Q7DK" placeholder="https://... or click Upload" data-cat="0" data-item="2" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 2)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 2)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="New Hire Paycom Manager Onboarding" placeholder="Document name" data-cat="0" data-item="3" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/iAsUWta7QreM7ffmI7Fa" placeholder="https://... or click Upload" data-cat="0" data-item="3" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 3)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 3)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="New Hire Paycom Sending Self Service Links" placeholder="Document name" data-cat="0" data-item="4" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/G1uxTwUbQmqVTdn3MEdm" placeholder="https://... or click Upload" data-cat="0" data-item="4" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 4)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 4)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Rapid Pay Card Instructions for Direct Deposit" placeholder="Document name" data-cat="0" data-item="5" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/YEiG6vV3TXa6fyJEeIIX" placeholder="https://... or click Upload" data-cat="0" data-item="5" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 5)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 5)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Rehire PAF and Process" placeholder="Document name" data-cat="0" data-item="6" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/2y3W13C8SbeBDfuwngLU" placeholder="https://... or click Upload" data-cat="0" data-item="6" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 6)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 6)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Termination PAF and Process" placeholder="Document name" data-cat="0" data-item="7" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/Sw9MPDBbS2S6sJ7RzMYc" placeholder="https://... or click Upload" data-cat="0" data-item="7" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 7)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 7)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Pay Change PAFs and Process" placeholder="Document name" data-cat="0" data-item="8" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/BUOsIiBESeOGlRDtgnJi" placeholder="https://... or click Upload" data-cat="0" data-item="8" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(0, 8)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(0, 8)" title="Remove">✕</button>
-    </div></div><div class="add-item-actions"><button class="add-item-btn upload-new-btn">📎 Upload New Document</button><button class="add-item-btn">+ Add Link Manually</button></div></div><div class="admin-category-card"><div class="admin-cat-header-row">
-        <input class="text-input icon-field" value="📝" data-cat="1" data-field="icon" oninput="updateCategoryField(this)">
-        <input class="text-input title-field" value="Counseling and Discipline" data-cat="1" data-field="title" oninput="updateCategoryField(this)">
-      </div><textarea class="text-area" data-cat="1" data-field="description"></textarea><div class="admin-items-list"><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Counseling and Discipline Training (Video)" placeholder="Document name" data-cat="1" data-item="0" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/vhyCAuPfTyapGU1VB2gH" placeholder="https://... or click Upload" data-cat="1" data-item="0" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(1, 0)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(1, 0)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Counseling and Discipline Training (PowerPoint)" placeholder="Document name" data-cat="1" data-item="1" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/ZxBfR5SRDO09xHrRsR7G" placeholder="https://... or click Upload" data-cat="1" data-item="1" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(1, 1)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(1, 1)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Counseling and Termination Guidelines" placeholder="Document name" data-cat="1" data-item="2" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/KkyHUI2XQ1ifMOeN2meK" placeholder="https://... or click Upload" data-cat="1" data-item="2" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(1, 2)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(1, 2)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Counseling Form" placeholder="Document name" data-cat="1" data-item="3" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://dossaniparadise.github.io/counselingform/" placeholder="https://... or click Upload" data-cat="1" data-item="3" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(1, 3)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(1, 3)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Termination Form" placeholder="Document name" data-cat="1" data-item="4" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://dossaniparadise.github.io/terminationform/" placeholder="https://... or click Upload" data-cat="1" data-item="4" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(1, 4)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(1, 4)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Resignation Form" placeholder="Document name" data-cat="1" data-item="5" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://dossaniparadise.github.io/resignationform/" placeholder="https://... or click Upload" data-cat="1" data-item="5" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(1, 5)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(1, 5)" title="Remove">✕</button>
-    </div></div><div class="add-item-actions"><button class="add-item-btn upload-new-btn">📎 Upload New Document</button><button class="add-item-btn">+ Add Link Manually</button></div></div><div class="admin-category-card"><div class="admin-cat-header-row">
-        <input class="text-input icon-field" value="🏥" data-cat="2" data-field="icon" oninput="updateCategoryField(this)">
-        <input class="text-input title-field" value="Benefit Information" data-cat="2" data-field="title" oninput="updateCategoryField(this)">
-      </div><textarea class="text-area" data-cat="2" data-field="description"></textarea><div class="admin-items-list"><div class="admin-item-row">
-      <input class="text-input item-name-input" value="New Employee Benefits Overview (PowerPoint)" placeholder="Document name" data-cat="2" data-item="0" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/KQx8DC4R2OyqOvPFpT6Q" placeholder="https://... or click Upload" data-cat="2" data-item="0" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(2, 0)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(2, 0)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Provider Look Up Guides" placeholder="Document name" data-cat="2" data-item="1" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="2" data-item="1" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(2, 1)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(2, 1)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Summary Plan Descriptions" placeholder="Document name" data-cat="2" data-item="2" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="2" data-item="2" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(2, 2)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(2, 2)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Critical Illness Claim Form" placeholder="Document name" data-cat="2" data-item="3" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/ol9l9uaRT1aiCST2rBf5" placeholder="https://... or click Upload" data-cat="2" data-item="3" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(2, 3)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(2, 3)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Principal eService and Mobile App Flyer" placeholder="Document name" data-cat="2" data-item="4" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/AZ3m8l2StqcCsHuwfN1e" placeholder="https://... or click Upload" data-cat="2" data-item="4" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(2, 4)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(2, 4)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Principal Wellness Benefit Flyer" placeholder="Document name" data-cat="2" data-item="5" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/tXT6j6yTDq215Vr0UJ2C" placeholder="https://... or click Upload" data-cat="2" data-item="5" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(2, 5)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(2, 5)" title="Remove">✕</button>
-    </div></div><div class="add-item-actions"><button class="add-item-btn upload-new-btn">📎 Upload New Document</button><button class="add-item-btn">+ Add Link Manually</button></div></div><div class="admin-category-card"><div class="admin-cat-header-row">
-        <input class="text-input icon-field" value="🎓" data-cat="3" data-field="icon" oninput="updateCategoryField(this)">
-        <input class="text-input title-field" value="Employee Training" data-cat="3" data-field="title" oninput="updateCategoryField(this)">
-      </div><textarea class="text-area" data-cat="3" data-field="description"></textarea><div class="admin-items-list"><div class="admin-item-row">
-      <input class="text-input item-name-input" value="C-Store Orientation Training (First Day)" placeholder="Document name" data-cat="3" data-item="0" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="0" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 0)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 0)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="C-Store Team Member Training" placeholder="Document name" data-cat="3" data-item="1" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="1" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 1)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 1)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="C-Store Shift Manager Training" placeholder="Document name" data-cat="3" data-item="2" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="2" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 2)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 2)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="C-Store Assistant GM Training" placeholder="Document name" data-cat="3" data-item="3" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="3" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 3)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 3)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="C-Store General Manager Training" placeholder="Document name" data-cat="3" data-item="4" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="4" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 4)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 4)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="C-Store Training Guidelines" placeholder="Document name" data-cat="3" data-item="5" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="5" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 5)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 5)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food Training Guidelines" placeholder="Document name" data-cat="3" data-item="6" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="6" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 6)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 6)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food Orientation Training (First Day)" placeholder="Document name" data-cat="3" data-item="7" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="7" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 7)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 7)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food Team Member Training" placeholder="Document name" data-cat="3" data-item="8" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="8" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 8)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 8)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food Shift Manager Training" placeholder="Document name" data-cat="3" data-item="9" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="9" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 9)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 9)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food Assistant GM Training" placeholder="Document name" data-cat="3" data-item="10" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="10" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 10)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 10)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food General Manager Training" placeholder="Document name" data-cat="3" data-item="11" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="11" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 11)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 11)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Fast Food District Manager Training" placeholder="Document name" data-cat="3" data-item="12" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="12" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 12)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 12)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="New Management HR Essentials Training (PowerPoint)" placeholder="Document name" data-cat="3" data-item="13" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="13" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 13)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 13)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Training Summary Sheet" placeholder="Document name" data-cat="3" data-item="14" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="3" data-item="14" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(3, 14)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(3, 14)" title="Remove">✕</button>
-    </div></div><div class="add-item-actions"><button class="add-item-btn upload-new-btn">📎 Upload New Document</button><button class="add-item-btn">+ Add Link Manually</button></div></div><div class="admin-category-card"><div class="admin-cat-header-row">
-        <input class="text-input icon-field" value="🚑" data-cat="4" data-field="icon" oninput="updateCategoryField(this)">
-        <input class="text-input title-field" value="Work Comp and Incident Reporting" data-cat="4" data-field="title" oninput="updateCategoryField(this)">
-      </div><textarea class="text-area" data-cat="4" data-field="description"></textarea><div class="admin-items-list"><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Employee Accident and Injury Response Guide" placeholder="Document name" data-cat="4" data-item="0" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/sy6zalRYRTzGLset2lCP" placeholder="https://... or click Upload" data-cat="4" data-item="0" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(4, 0)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(4, 0)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Incident Report Documentation" placeholder="Document name" data-cat="4" data-item="1" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/ecg5gRwTS8icrhp4BdHg" placeholder="https://... or click Upload" data-cat="4" data-item="1" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(4, 1)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(4, 1)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Concentra Clinic Locations" placeholder="Document name" data-cat="4" data-item="2" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="" placeholder="https://... or click Upload" data-cat="4" data-item="2" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload " onclick="uploadForItem(4, 2)" title="Upload a file for this document">📎 Upload</button>
-      <button class="btn-danger" onclick="removeItem(4, 2)" title="Remove">✕</button>
-    </div></div><div class="add-item-actions"><button class="add-item-btn upload-new-btn">📎 Upload New Document</button><button class="add-item-btn">+ Add Link Manually</button></div></div><div class="admin-category-card"><div class="admin-cat-header-row">
-        <input class="text-input icon-field" value="📈" data-cat="5" data-field="icon" oninput="updateCategoryField(this)">
-        <input class="text-input title-field" value="Performance" data-cat="5" data-field="title" oninput="updateCategoryField(this)">
-      </div><textarea class="text-area" data-cat="5" data-field="description"></textarea><div class="admin-items-list"><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Dossani Paradise Employee Handbook" placeholder="Document name" data-cat="5" data-item="0" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/HMTrDhhdQ6OBuqm4kEM5" placeholder="https://... or click Upload" data-cat="5" data-item="0" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(5, 0)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(5, 0)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Goal Setting" placeholder="Document name" data-cat="5" data-item="1" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/Wi1rafTm6BsBSzqxlfNw" placeholder="https://... or click Upload" data-cat="5" data-item="1" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(5, 1)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(5, 1)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Performance Improvement Plan (PIP)" placeholder="Document name" data-cat="5" data-item="2" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/O2JrUgaUTOyRIQBxBsj0" placeholder="https://... or click Upload" data-cat="5" data-item="2" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(5, 2)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(5, 2)" title="Remove">✕</button>
-    </div><div class="admin-item-row">
-      <input class="text-input item-name-input" value="Performance Review" placeholder="Document name" data-cat="5" data-item="3" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="https://cdn.filestackcontent.com/xarch6XjSgHpXH9nsDz7" placeholder="https://... or click Upload" data-cat="5" data-item="3" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload linked" onclick="uploadForItem(5, 3)" title="Upload a file for this document">✓ Replace</button>
-      <button class="btn-danger" onclick="removeItem(5, 3)" title="Remove">✕</button>
-    </div></div><div class="add-item-actions"><button class="add-item-btn upload-new-btn">📎 Upload New Document</button><button class="add-item-btn">+ Add Link Manually</button></div></div></div>
+    <div id="admin-categories"></div>
 
     <div class="admin-footer-actions">
       <button class="btn btn-secondary" style="width:auto;" onclick="discardChanges()">Discard Changes</button>
@@ -1190,7 +1042,9 @@
       item.className = "accordion-item";
       item.id = "acc-" + cat.id;
 
-      const configuredCount = cat.items.filter(i => i.url && i.url.trim() !== "").length;
+      // Count across ungrouped items AND every subcategory.
+      const allDocs = collectDocs(cat);
+      const configuredCount = allDocs.filter(i => i.url && i.url.trim() !== "").length;
 
       const header = document.createElement("button");
       header.className = "accordion-header";
@@ -1202,7 +1056,7 @@
           <div class="accordion-title">${escapeHtml(cat.title)}</div>
           <div class="accordion-desc">${escapeHtml(cat.description || "")}</div>
         </div>
-        <div class="accordion-meta">${configuredCount}/${cat.items.length} linked</div>
+        <div class="accordion-meta">${configuredCount}/${allDocs.length} linked</div>
         <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
       `;
 
@@ -1213,20 +1067,51 @@
       const panelInner = document.createElement("div");
       panelInner.className = "accordion-panel-inner";
 
-      if (cat.items.length === 0) {
+      const groups = cat.groups || [];
+
+      if (allDocs.length === 0) {
         panelInner.innerHTML = `<div class="empty-note">No documents added yet.</div>`;
       } else {
-        cat.items.forEach(doc => {
-          const row = document.createElement("div");
-          row.className = "doc-row";
-          const hasUrl = doc.url && doc.url.trim() !== "";
-          row.innerHTML = `
-            <span class="doc-name">${escapeHtml(doc.name)}</span>
-            ${hasUrl
-              ? `<a class="doc-link" href="${escapeAttr(doc.url)}" target="_blank" rel="noopener noreferrer">Open <svg class="doc-link-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>`
-              : `<span class="doc-unset">Not configured</span>`}
+        // 1. Items that sit directly on the category (no subcategory).
+        const ungrouped = document.createElement("div");
+        ungrouped.className = "ungrouped-items";
+        cat.items.forEach(doc => ungrouped.appendChild(buildDocRow(doc)));
+        panelInner.appendChild(ungrouped);
+
+        // 2. Each subcategory as its own nested collapsible section.
+        groups.forEach(grp => {
+          const gLinked = grp.items.filter(i => i.url && i.url.trim() !== "").length;
+
+          const sub = document.createElement("div");
+          sub.className = "subgroup";
+          sub.id = "sub-" + cat.id + "-" + grp.id;
+
+          const subHeader = document.createElement("button");
+          subHeader.className = "subgroup-header";
+          subHeader.setAttribute("aria-expanded", "false");
+          subHeader.onclick = (e) => { e.stopPropagation(); toggleSubgroup(cat.id, grp.id); };
+          subHeader.innerHTML = `
+            <svg class="subgroup-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            <span class="subgroup-title">${escapeHtml(grp.title)}</span>
+            <span class="subgroup-meta">${gLinked}/${grp.items.length} linked</span>
           `;
-          panelInner.appendChild(row);
+
+          const subPanel = document.createElement("div");
+          subPanel.className = "subgroup-panel";
+          subPanel.id = "subpanel-" + cat.id + "-" + grp.id;
+
+          const subInner = document.createElement("div");
+          subInner.className = "subgroup-panel-inner";
+          if (grp.items.length === 0) {
+            subInner.innerHTML = `<div class="empty-note">No documents added yet.</div>`;
+          } else {
+            grp.items.forEach(doc => subInner.appendChild(buildDocRow(doc)));
+          }
+
+          subPanel.appendChild(subInner);
+          sub.appendChild(subHeader);
+          sub.appendChild(subPanel);
+          panelInner.appendChild(sub);
         });
       }
 
@@ -1237,6 +1122,28 @@
     });
   }
 
+  // ---------- Subcategory helpers ----------
+  // Every doc in a category: the ungrouped ones plus everything in each
+  // subcategory. Categories without a "groups" key behave exactly as before.
+  function collectDocs(cat) {
+    const out = (cat.items || []).slice();
+    (cat.groups || []).forEach(g => out.push(...(g.items || [])));
+    return out;
+  }
+
+  function buildDocRow(doc) {
+    const row = document.createElement("div");
+    row.className = "doc-row";
+    const hasUrl = doc.url && doc.url.trim() !== "";
+    row.innerHTML = `
+      <span class="doc-name">${escapeHtml(doc.name)}</span>
+      ${hasUrl
+        ? `<a class="doc-link" href="${escapeAttr(doc.url)}" target="_blank" rel="noopener noreferrer">Open <svg class="doc-link-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>`
+        : `<span class="doc-unset">Not configured</span>`}
+    `;
+    return row;
+  }
+
   function toggleAccordion(catId) {
     const item = document.getElementById("acc-" + catId);
     const panel = document.getElementById("panel-" + catId);
@@ -1244,13 +1151,48 @@
     const isOpen = item.classList.contains("open");
 
     if (isOpen) {
-      panel.style.maxHeight = null;
+      // Animate closed from the current pixel height (it may be "none").
+      panel.style.maxHeight = panel.scrollHeight + "px";
+      requestAnimationFrame(() => {
+        panel.style.maxHeight = null;
+      });
       item.classList.remove("open");
       header.setAttribute("aria-expanded", "false");
     } else {
       item.classList.add("open");
       header.setAttribute("aria-expanded", "true");
       panel.style.maxHeight = panel.scrollHeight + "px";
+      // Once the open animation finishes, drop the fixed height so that
+      // expanding a subcategory inside isn't clipped by the parent.
+      panel.addEventListener("transitionend", function relax(e) {
+        if (e.propertyName !== "max-height") return;
+        panel.removeEventListener("transitionend", relax);
+        if (item.classList.contains("open")) panel.style.maxHeight = "none";
+      });
+    }
+  }
+
+  function toggleSubgroup(catId, grpId) {
+    const sub = document.getElementById("sub-" + catId + "-" + grpId);
+    const subPanel = document.getElementById("subpanel-" + catId + "-" + grpId);
+    const subHeader = sub.querySelector(".subgroup-header");
+    const isOpen = sub.classList.contains("open");
+
+    if (isOpen) {
+      subPanel.style.maxHeight = null;
+      sub.classList.remove("open");
+      subHeader.setAttribute("aria-expanded", "false");
+    } else {
+      sub.classList.add("open");
+      subHeader.setAttribute("aria-expanded", "true");
+      subPanel.style.maxHeight = subPanel.scrollHeight + "px";
+    }
+
+    // If the parent tile is still mid-animation with a fixed height, grow it
+    // so the expanding subcategory stays visible.
+    const parentPanel = document.getElementById("panel-" + catId);
+    if (parentPanel && parentPanel.style.maxHeight && parentPanel.style.maxHeight !== "none") {
+      parentPanel.style.maxHeight = "none";
     }
   }
 
@@ -1261,6 +1203,13 @@
       if (panel) panel.style.maxHeight = null;
       const header = item.querySelector(".accordion-header");
       if (header) header.setAttribute("aria-expanded", "false");
+    });
+    document.querySelectorAll(".subgroup.open").forEach(sub => {
+      sub.classList.remove("open");
+      const p = sub.querySelector(".subgroup-panel");
+      if (p) p.style.maxHeight = null;
+      const h = sub.querySelector(".subgroup-header");
+      if (h) h.setAttribute("aria-expanded", "false");
     });
   }
 
@@ -1356,48 +1305,176 @@
       descInput.oninput = () => updateCategoryField(descInput);
       card.appendChild(descInput);
 
+      if (!cat.groups) cat.groups = [];
+      const hasGroups = cat.groups.length > 0;
+
+      // --- Items sitting directly on the category (grpIdx = -1) ---
+      if (hasGroups) {
+        const lbl = document.createElement("div");
+        lbl.className = "ungrouped-label";
+        lbl.textContent = "Main (no subcategory)";
+        card.appendChild(lbl);
+      }
+
       const itemsList = document.createElement("div");
       itemsList.className = "admin-items-list";
-
       cat.items.forEach((doc, itemIdx) => {
-        itemsList.appendChild(buildItemRow(catIdx, itemIdx, doc));
+        itemsList.appendChild(buildItemRow(catIdx, -1, itemIdx, doc));
+      });
+      if (hasGroups && cat.items.length === 0) {
+        const note = document.createElement("div");
+        note.className = "empty-group-note";
+        note.textContent = "No items here — everything is inside a subcategory.";
+        itemsList.appendChild(note);
+      }
+      card.appendChild(itemsList);
+      card.appendChild(buildActionsRow(catIdx, -1));
+
+      // --- Subcategory blocks ---
+      cat.groups.forEach((grp, grpIdx) => {
+        const block = document.createElement("div");
+        block.className = "admin-group-block";
+
+        const head = document.createElement("div");
+        head.className = "admin-group-head";
+        head.innerHTML = `
+          <span class="group-tag">Subcategory</span>
+          <input class="text-input group-title-input" value="${escapeAttr(grp.title)}"
+                 placeholder="Subcategory name"
+                 data-cat="${catIdx}" data-grp="${grpIdx}" oninput="updateGroupTitle(this)">
+          <button class="btn-danger" onclick="removeGroup(${catIdx}, ${grpIdx})"
+                  title="Delete subcategory (its documents move back to Main)">✕</button>
+        `;
+        block.appendChild(head);
+
+        const gList = document.createElement("div");
+        gList.className = "admin-items-list";
+        grp.items.forEach((doc, itemIdx) => {
+          gList.appendChild(buildItemRow(catIdx, grpIdx, itemIdx, doc));
+        });
+        if (grp.items.length === 0) {
+          const note = document.createElement("div");
+          note.className = "empty-group-note";
+          note.textContent = "No documents in this subcategory yet.";
+          gList.appendChild(note);
+        }
+        block.appendChild(gList);
+        block.appendChild(buildActionsRow(catIdx, grpIdx));
+
+        card.appendChild(block);
       });
 
-      card.appendChild(itemsList);
-
-      const actionsRow = document.createElement("div");
-      actionsRow.className = "add-item-actions";
-
-      const uploadNewBtn = document.createElement("button");
-      uploadNewBtn.className = "add-item-btn upload-new-btn";
-      uploadNewBtn.textContent = "📎 Upload New Document";
-      uploadNewBtn.onclick = () => uploadNewDocument(catIdx);
-      actionsRow.appendChild(uploadNewBtn);
-
-      const addBtn = document.createElement("button");
-      addBtn.className = "add-item-btn";
-      addBtn.textContent = "+ Add Link Manually";
-      addBtn.onclick = () => {
-        CONFIG.categories[catIdx].items.push({ name: "New Document", url: "" });
-        populateAdminForm();
-      };
-      actionsRow.appendChild(addBtn);
-
-      card.appendChild(actionsRow);
+      // --- Add a new subcategory ---
+      const addGroupRow = document.createElement("div");
+      addGroupRow.className = "add-item-actions";
+      const addGroupBtn = document.createElement("button");
+      addGroupBtn.className = "add-item-btn add-group-btn";
+      addGroupBtn.textContent = "📁 Add Subcategory";
+      addGroupBtn.onclick = () => addGroup(catIdx);
+      addGroupRow.appendChild(addGroupBtn);
+      card.appendChild(addGroupRow);
 
       wrap.appendChild(card);
     });
   }
 
-  function buildItemRow(catIdx, itemIdx, doc) {
+  // Upload / add-link buttons for a given list (grpIdx = -1 means category level).
+  function buildActionsRow(catIdx, grpIdx) {
+    const actionsRow = document.createElement("div");
+    actionsRow.className = "add-item-actions";
+
+    const uploadNewBtn = document.createElement("button");
+    uploadNewBtn.className = "add-item-btn upload-new-btn";
+    uploadNewBtn.textContent = "📎 Upload New Document";
+    uploadNewBtn.onclick = () => uploadNewDocument(catIdx, grpIdx);
+    actionsRow.appendChild(uploadNewBtn);
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "add-item-btn";
+    addBtn.textContent = "+ Add Link Manually";
+    addBtn.onclick = () => {
+      getList(catIdx, grpIdx).push({ name: "New Document", url: "" });
+      populateAdminForm();
+    };
+    actionsRow.appendChild(addBtn);
+
+    return actionsRow;
+  }
+
+  // Resolve which array a (category, group) pair points at.
+  function getList(catIdx, grpIdx) {
+    const cat = CONFIG.categories[catIdx];
+    if (grpIdx === -1 || grpIdx === null || grpIdx === undefined) return cat.items;
+    return cat.groups[grpIdx].items;
+  }
+
+  function addGroup(catIdx) {
+    const cat = CONFIG.categories[catIdx];
+    if (!cat.groups) cat.groups = [];
+    const existing = new Set(cat.groups.map(g => g.id));
+    let n = cat.groups.length + 1;
+    let id = "group" + n;
+    while (existing.has(id)) { n++; id = "group" + n; }
+    cat.groups.push({ id: id, title: "New Subcategory", items: [] });
+    populateAdminForm();
+  }
+
+  function updateGroupTitle(el) {
+    const catIdx = parseInt(el.dataset.cat, 10);
+    const grpIdx = parseInt(el.dataset.grp, 10);
+    CONFIG.categories[catIdx].groups[grpIdx].title = el.value;
+  }
+
+  // Deleting a subcategory never deletes documents -- they move back to Main.
+  function removeGroup(catIdx, grpIdx) {
+    const cat = CONFIG.categories[catIdx];
+    const grp = cat.groups[grpIdx];
+    const count = grp.items.length;
+    const msg = count
+      ? `Delete the subcategory "${grp.title}"?\n\nIts ${count} document(s) will move back to Main — no links will be lost.`
+      : `Delete the empty subcategory "${grp.title}"?`;
+    if (!confirm(msg)) return;
+    cat.items.push(...grp.items);
+    cat.groups.splice(grpIdx, 1);
+    populateAdminForm();
+  }
+
+  // Move one document between Main and any subcategory, carrying its link.
+  function moveItem(selectEl) {
+    const catIdx = parseInt(selectEl.dataset.cat, 10);
+    const grpIdx = parseInt(selectEl.dataset.grp, 10);
+    const itemIdx = parseInt(selectEl.dataset.item, 10);
+    const target = parseInt(selectEl.value, 10);
+    if (target === grpIdx) return;
+    const doc = getList(catIdx, grpIdx).splice(itemIdx, 1)[0];
+    getList(catIdx, target).push(doc);
+    populateAdminForm();
+  }
+
+  function buildItemRow(catIdx, grpIdx, itemIdx, doc) {
     const row = document.createElement("div");
     row.className = "admin-item-row";
     const hasUrl = doc.url && doc.url.trim() !== "";
+    const d = `data-cat="${catIdx}" data-grp="${grpIdx}" data-item="${itemIdx}"`;
+
+    // Only show the move dropdown when there's somewhere to move to.
+    const groups = CONFIG.categories[catIdx].groups || [];
+    let moveSelect = "";
+    if (groups.length > 0) {
+      const opts = [`<option value="-1" ${grpIdx === -1 ? "selected" : ""}>Main</option>`]
+        .concat(groups.map((g, i) =>
+          `<option value="${i}" ${grpIdx === i ? "selected" : ""}>${escapeHtml(g.title)}</option>`));
+      moveSelect = `<select class="text-input item-move-select" ${d}
+                      title="Move this document to another subcategory"
+                      onchange="moveItem(this)">${opts.join("")}</select>`;
+    }
+
     row.innerHTML = `
-      <input class="text-input item-name-input" value="${escapeAttr(doc.name)}" placeholder="Document name" data-cat="${catIdx}" data-item="${itemIdx}" data-field="name" oninput="updateItemField(this)">
-      <input class="text-input item-url-input" value="${escapeAttr(doc.url)}" placeholder="https://... or click Upload" data-cat="${catIdx}" data-item="${itemIdx}" data-field="url" oninput="updateItemField(this)">
-      <button class="btn-upload ${hasUrl ? "linked" : ""}" onclick="uploadForItem(${catIdx}, ${itemIdx})" title="Upload a file for this document">${hasUrl ? "✓ Replace" : "📎 Upload"}</button>
-      <button class="btn-danger" onclick="removeItem(${catIdx}, ${itemIdx})" title="Remove">✕</button>
+      <input class="text-input item-name-input" value="${escapeAttr(doc.name)}" placeholder="Document name" ${d} data-field="name" oninput="updateItemField(this)">
+      <input class="text-input item-url-input" value="${escapeAttr(doc.url)}" placeholder="https://... or click Upload" ${d} data-field="url" oninput="updateItemField(this)">
+      ${moveSelect}
+      <button class="btn-upload ${hasUrl ? "linked" : ""}" onclick="uploadForItem(${catIdx}, ${grpIdx}, ${itemIdx})" title="Upload a file for this document">${hasUrl ? "✓ Replace" : "📎 Upload"}</button>
+      <button class="btn-danger" onclick="removeItem(${catIdx}, ${grpIdx}, ${itemIdx})" title="Remove">✕</button>
     `;
     return row;
   }
@@ -1410,13 +1487,14 @@
 
   function updateItemField(el) {
     const catIdx = parseInt(el.dataset.cat, 10);
+    const grpIdx = parseInt(el.dataset.grp, 10);
     const itemIdx = parseInt(el.dataset.item, 10);
     const field = el.dataset.field;
-    CONFIG.categories[catIdx].items[itemIdx][field] = el.value;
+    getList(catIdx, grpIdx)[itemIdx][field] = el.value;
   }
 
-  function removeItem(catIdx, itemIdx) {
-    CONFIG.categories[catIdx].items.splice(itemIdx, 1);
+  function removeItem(catIdx, grpIdx, itemIdx) {
+    getList(catIdx, grpIdx).splice(itemIdx, 1);
     populateAdminForm();
   }
 
@@ -1438,46 +1516,56 @@
     return (filename || "").replace(/\.[^./\\]+$/, "");
   }
 
+  // Filestack storage path, nested by subcategory so the bucket mirrors the page.
+  function storagePath(catIdx, grpIdx) {
+    const cat = CONFIG.categories[catIdx];
+    let p = "/hr-resources/" + cat.id + "/";
+    if (grpIdx !== -1 && grpIdx !== null && grpIdx !== undefined && cat.groups && cat.groups[grpIdx]) {
+      p += cat.groups[grpIdx].id + "/";
+    }
+    return p;
+  }
+
   // Attach an uploaded file to an existing item row, keeping its name as-is.
-  function uploadForItem(catIdx, itemIdx) {
+  function uploadForItem(catIdx, grpIdx, itemIdx) {
     const client = getFilestackClient();
     if (!client) {
       alert("Upload isn't available yet -- the Filestack script may still be loading. Wait a moment and try again.");
       return;
     }
-    const catId = CONFIG.categories[catIdx].id;
     client.picker({
       maxFiles: 1,
       fromSources: ["local_file_system", "googledrive", "dropbox", "onedrive", "url"],
-      storeTo: { path: "/hr-resources/" + catId + "/" },
+      storeTo: { path: storagePath(catIdx, grpIdx) },
       onUploadDone: (res) => {
         const f = res.filesUploaded && res.filesUploaded[0];
         if (!f) return;
-        CONFIG.categories[catIdx].items[itemIdx].url = f.url;
-        if (!CONFIG.categories[catIdx].items[itemIdx].name ||
-            CONFIG.categories[catIdx].items[itemIdx].name === "New Document") {
-          CONFIG.categories[catIdx].items[itemIdx].name = stripExtension(f.filename);
+        const target = getList(catIdx, grpIdx)[itemIdx];
+        if (!target) return;
+        target.url = f.url;
+        if (!target.name || target.name === "New Document") {
+          target.name = stripExtension(f.filename);
         }
         populateAdminForm();
       }
     }).open();
   }
 
-  // Upload a brand new document and append it as a new item in the category.
-  function uploadNewDocument(catIdx) {
+  // Upload new documents and append them to the given list.
+  function uploadNewDocument(catIdx, grpIdx) {
     const client = getFilestackClient();
     if (!client) {
       alert("Upload isn't available yet -- the Filestack script may still be loading. Wait a moment and try again.");
       return;
     }
-    const catId = CONFIG.categories[catIdx].id;
     client.picker({
       maxFiles: 10,
       fromSources: ["local_file_system", "googledrive", "dropbox", "onedrive", "url"],
-      storeTo: { path: "/hr-resources/" + catId + "/" },
+      storeTo: { path: storagePath(catIdx, grpIdx) },
       onUploadDone: (res) => {
+        const list = getList(catIdx, grpIdx);
         (res.filesUploaded || []).forEach(f => {
-          CONFIG.categories[catIdx].items.push({ name: stripExtension(f.filename), url: f.url });
+          list.push({ name: stripExtension(f.filename), url: f.url });
         });
         populateAdminForm();
       }
@@ -1507,7 +1595,17 @@
     closeLogin();
     closeNotificationModal();
 
+    // The snapshot below captures live DOM, so blank out anything the page
+    // rebuilds on load. Without this, each save bakes in the previous save's
+    // admin form and tiles, and the file grows every time.
+    document.getElementById("admin-categories").innerHTML = "";
+    document.getElementById("grid").innerHTML = "";
+
     const htmlString = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+
+    // Rebuild through the render functions (not innerHTML) so click handlers
+    // are reattached properly.
+    render();
     const blob = new Blob([htmlString], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
