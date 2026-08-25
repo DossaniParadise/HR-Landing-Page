@@ -15,7 +15,7 @@
 <script id="config-data" type="application/json">{
   "pageTitle": "DPM HR Landing Page",
   "pageSubtitle": "Human Resources Resources and Quick Links",
-  "announcement": "Welcome to the DPM HR resource hub. Click a category below to expand it and see the documents and forms inside. If a link has not been added yet, it will be marked as not configured.",
+  "announcement": "Welcome to the DPM HR resource hub. Click a category below to expand it and see the documents and forms inside. If a link has not been added yet, it will be marked as under construction.",
   "footerText": "DPM HR Resources",
   "lastUpdated": "August 2026",
   "categories": [
@@ -397,6 +397,97 @@
     margin: 0 auto;
   }
 
+  /* ---- Search ---- */
+  .search-wrap { margin-top: 2.5rem; }
+
+  .search-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-slate);
+    border-radius: 10px;
+    padding: 0 0.65rem 0 0.85rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .search-field:focus-within {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+
+  .search-icon {
+    width: 17px; height: 17px; flex-shrink: 0;
+    stroke: var(--text-muted); fill: none; stroke-width: 2.2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    padding: 0.85rem 0.7rem;
+    min-width: 0;
+  }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-input::-webkit-search-cancel-button { display: none; }
+
+  .search-clear {
+    display: none;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    background-color: #f1f5f9;
+    border: 1px solid var(--border-slate);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.38rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .search-clear svg {
+    width: 12px; height: 12px;
+    stroke: currentColor; fill: none; stroke-width: 2.5;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .search-clear:hover { background-color: #e2e8f0; color: var(--text-primary); }
+  .search-clear.visible { display: flex; }
+
+  .search-status {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.6rem;
+    padding-left: 0.15rem;
+    min-height: 1.1rem;
+  }
+  .search-status strong { color: var(--text-secondary); font-weight: 600; }
+
+  mark.search-hit {
+    background-color: #fef08a;
+    color: inherit;
+    padding: 0.05em 0.12em;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  .no-results {
+    background-color: var(--bg-card);
+    border: 1px dashed var(--border-accent);
+    border-radius: 12px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .no-results-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.35rem; }
+  .no-results-text { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+  .no-results .btn { width: auto; padding: 0.6rem 1.2rem; }
+
   .announcement-box {
     background-color: var(--bg-card);
     border: 1px solid var(--border-slate);
@@ -430,7 +521,7 @@
   .announcement-body { font-size: 0.925rem; color: var(--text-secondary); line-height: 1.5; }
 
   /* Accordion */
-  #grid { margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; }
+  #grid { margin-top: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
 
   .accordion-item {
     background-color: var(--bg-card);
@@ -530,6 +621,7 @@
     padding: 0.2rem 0.6rem;
     border-radius: 6px;
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .empty-note { font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem 0.25rem; }
@@ -817,9 +909,26 @@
         </svg>
         Instructions &amp; Guidance
       </div>
-      <p id="announcement-panel-text" class="announcement-body">Welcome to the DPM HR resource hub. Click a category below to expand it and see the documents and forms inside. If a link has not been added yet, it will be marked as not configured.</p>
+      <p id="announcement-panel-text" class="announcement-body">Welcome to the DPM HR resource hub. Click a category below to expand it and see the documents and forms inside. If a link has not been added yet, it will be marked as under construction.</p>
     </div>
   </header>
+
+  <div class="search-wrap">
+    <div class="search-field">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input type="search" id="search-input" class="search-input"
+             placeholder="Search documents, categories, or topics..."
+             autocomplete="off" aria-label="Search HR resources">
+      <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+        Clear
+      </button>
+    </div>
+    <div id="search-status" class="search-status" role="status" aria-live="polite"></div>
+  </div>
 
   <main id="grid"></main>
 
@@ -835,10 +944,10 @@
 <!-- Link-not-configured modal -->
 <div id="alert-modal-overlay" class="backdrop" aria-hidden="true" role="none">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-alert-title-id">
-    <div class="modal-symbol" aria-hidden="true">⚠️</div>
-    <h3 class="modal-hdr" id="modal-alert-title-id">Link Not Configured Yet</h3>
+    <div class="modal-symbol" aria-hidden="true">🚧</div>
+    <h3 class="modal-hdr" id="modal-alert-title-id">Under Construction</h3>
     <p class="modal-text-content">
-      The destination link for <strong id="modal-target-resource-name">this resource</strong> is not configured yet. Please check back later or contact your HR administrator.
+      The destination link for <strong id="modal-target-resource-name">this resource</strong> is still under construction. Please check back later or contact your HR administrator.
     </p>
     <button class="btn" onclick="closeNotificationModal()">Dismiss</button>
   </div>
@@ -899,6 +1008,8 @@
   const ORIGINAL_CONFIG_JSON = JSON.stringify(CONFIG);
   let isAdmin = false;
 
+  let SEARCH_QUERY = "";
+
   // ---------- Public page rendering ----------
   function render() {
     document.getElementById("header-portal-title").textContent = CONFIG.pageTitle;
@@ -911,16 +1022,69 @@
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
 
+    const q = SEARCH_QUERY;
+    const searching = q !== "";
+    let shownCats = 0;
+    let shownDocs = 0;
+
     CONFIG.categories.forEach((cat, idx) => {
       const tint = TINTS[idx % TINTS.length];
-
-      const item = document.createElement("div");
-      item.className = "accordion-item";
-      item.id = "acc-" + cat.id;
 
       // Count across ungrouped items AND every subcategory.
       const allDocs = collectDocs(cat);
       const configuredCount = allDocs.filter(i => i.url && i.url.trim() !== "").length;
+
+      // --- Work out what survives the current search ---
+      // Specific hits (document names, subcategory names) always win. A match
+      // on the category title/summary only opens the whole category when
+      // nothing more specific inside it matched -- otherwise searching
+      // "fast food" would return every Training doc just because the phrase
+      // appears in that category's summary line.
+      const catMatches = searching &&
+        (matches(cat.title, q) || matches(cat.description || "", q));
+
+      const groups = cat.groups || [];
+
+      const docHits = searching ? cat.items.filter(d => matches(d.name, q)) : cat.items;
+      const groupHits = [];
+      groups.forEach(grp => {
+        if (!searching) { groupHits.push({ grp: grp, items: grp.items }); return; }
+        if (matches(grp.title, q)) {
+          groupHits.push({ grp: grp, items: grp.items });   // whole subcategory
+          return;
+        }
+        const items = grp.items.filter(d => matches(d.name, q));
+        if (items.length) groupHits.push({ grp: grp, items: items });
+      });
+
+      const specificCount = docHits.length +
+        groupHits.reduce((n, g) => n + g.items.length, 0);
+
+      let visibleItems, visibleGroups;
+      if (!searching || specificCount > 0) {
+        visibleItems = docHits;
+        visibleGroups = groupHits;
+      } else if (catMatches) {
+        // Category matched by name/summary but nothing inside did -> show all.
+        visibleItems = cat.items;
+        visibleGroups = groups.map(g => ({ grp: g, items: g.items }));
+      } else {
+        visibleItems = [];
+        visibleGroups = [];
+      }
+
+      const matchCount = visibleItems.length +
+        visibleGroups.reduce((n, g) => n + g.items.length, 0);
+
+      // Hide categories with nothing to show while searching.
+      if (searching && matchCount === 0) return;
+
+      shownCats++;
+      shownDocs += matchCount;
+
+      const item = document.createElement("div");
+      item.className = "accordion-item";
+      item.id = "acc-" + cat.id;
 
       const header = document.createElement("button");
       header.className = "accordion-header";
@@ -929,10 +1093,12 @@
       header.innerHTML = `
         <div class="icon-wrapper" style="background-color: var(--${tint});">${cat.icon}</div>
         <div class="accordion-title-wrap">
-          <div class="accordion-title">${escapeHtml(cat.title)}</div>
-          <div class="accordion-desc">${escapeHtml(cat.description || "")}</div>
+          <div class="accordion-title">${highlight(cat.title, q)}</div>
+          <div class="accordion-desc">${highlight(cat.description || "", q)}</div>
         </div>
-        <div class="accordion-meta">${configuredCount}/${allDocs.length} linked</div>
+        <div class="accordion-meta">${searching
+          ? matchCount + (matchCount === 1 ? " match" : " matches")
+          : configuredCount + "/" + allDocs.length + " linked"}</div>
         <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
       `;
 
@@ -943,20 +1109,20 @@
       const panelInner = document.createElement("div");
       panelInner.className = "accordion-panel-inner";
 
-      const groups = cat.groups || [];
-
       if (allDocs.length === 0) {
         panelInner.innerHTML = `<div class="empty-note">No documents added yet.</div>`;
       } else {
         // 1. Items that sit directly on the category (no subcategory).
         const ungrouped = document.createElement("div");
         ungrouped.className = "ungrouped-items";
-        cat.items.forEach(doc => ungrouped.appendChild(buildDocRow(doc)));
+        visibleItems.forEach(doc => ungrouped.appendChild(buildDocRow(doc, q)));
         panelInner.appendChild(ungrouped);
 
         // 2. Each subcategory as its own nested collapsible section.
-        groups.forEach(grp => {
-          const gLinked = grp.items.filter(i => i.url && i.url.trim() !== "").length;
+        visibleGroups.forEach(entry => {
+          const grp = entry.grp;
+          const items = entry.items;
+          const gLinked = items.filter(i => i.url && i.url.trim() !== "").length;
 
           const sub = document.createElement("div");
           sub.className = "subgroup";
@@ -968,8 +1134,10 @@
           subHeader.onclick = (e) => { e.stopPropagation(); toggleSubgroup(cat.id, grp.id); };
           subHeader.innerHTML = `
             <svg class="subgroup-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            <span class="subgroup-title">${escapeHtml(grp.title)}</span>
-            <span class="subgroup-meta">${gLinked}/${grp.items.length} linked</span>
+            <span class="subgroup-title">${highlight(grp.title, q)}</span>
+            <span class="subgroup-meta">${searching
+              ? items.length + (items.length === 1 ? " match" : " matches")
+              : gLinked + "/" + items.length + " linked"}</span>
           `;
 
           const subPanel = document.createElement("div");
@@ -978,10 +1146,10 @@
 
           const subInner = document.createElement("div");
           subInner.className = "subgroup-panel-inner";
-          if (grp.items.length === 0) {
+          if (items.length === 0) {
             subInner.innerHTML = `<div class="empty-note">No documents added yet.</div>`;
           } else {
-            grp.items.forEach(doc => subInner.appendChild(buildDocRow(doc)));
+            items.forEach(doc => subInner.appendChild(buildDocRow(doc, q)));
           }
 
           subPanel.appendChild(subInner);
@@ -995,7 +1163,88 @@
       item.appendChild(header);
       item.appendChild(panel);
       grid.appendChild(item);
+
+      // While searching, open everything so matches are visible immediately.
+      if (searching) {
+        item.classList.add("open");
+        header.setAttribute("aria-expanded", "true");
+        panel.style.maxHeight = "none";
+        panelInner.querySelectorAll(".subgroup").forEach(sg => {
+          sg.classList.add("open");
+          const sp = sg.querySelector(".subgroup-panel");
+          if (sp) sp.style.maxHeight = "none";
+          const sh = sg.querySelector(".subgroup-header");
+          if (sh) sh.setAttribute("aria-expanded", "true");
+        });
+      }
     });
+
+    if (searching && shownCats === 0) {
+      grid.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-title">No matches found</div>
+          <div class="no-results-text">Nothing matched &ldquo;${escapeHtml(SEARCH_QUERY)}&rdquo;. Try a shorter or different term.</div>
+          <button class="btn" onclick="clearSearch()">Clear search</button>
+        </div>`;
+    }
+
+    updateSearchStatus(shownCats, shownDocs);
+  }
+
+  // ---------- Search ----------
+  function matches(text, q) {
+    if (!q) return true;
+    return (text || "").toLowerCase().includes(q);
+  }
+
+  // Wrap matched text in <mark>, escaping each fragment so document names
+  // containing & or < can never inject markup.
+  function highlight(text, q) {
+    const s = text || "";
+    if (!q) return escapeHtml(s);
+    const lower = s.toLowerCase();
+    let out = "";
+    let i = 0;
+    let at = lower.indexOf(q);
+    while (at !== -1) {
+      out += escapeHtml(s.slice(i, at));
+      out += '<mark class="search-hit">' + escapeHtml(s.slice(at, at + q.length)) + "</mark>";
+      i = at + q.length;
+      at = lower.indexOf(q, i);
+    }
+    out += escapeHtml(s.slice(i));
+    return out;
+  }
+
+  function updateSearchStatus(cats, docs) {
+    const status = document.getElementById("search-status");
+    const clearBtn = document.getElementById("search-clear");
+    if (!SEARCH_QUERY) {
+      status.textContent = "";
+      clearBtn.classList.remove("visible");
+      return;
+    }
+    clearBtn.classList.add("visible");
+    if (cats === 0) {
+      status.innerHTML = `No results for <strong>${escapeHtml(SEARCH_QUERY)}</strong>`;
+    } else {
+      status.innerHTML =
+        `<strong>${docs}</strong> document${docs === 1 ? "" : "s"} in ` +
+        `<strong>${cats}</strong> categor${cats === 1 ? "y" : "ies"}`;
+    }
+  }
+
+  function runSearch(value) {
+    SEARCH_QUERY = (value || "").trim().toLowerCase();
+    render();
+  }
+
+  function clearSearch() {
+    const input = document.getElementById("search-input");
+    input.value = "";
+    SEARCH_QUERY = "";
+    render();
+    input.focus();
   }
 
   // ---------- Subcategory helpers ----------
@@ -1007,15 +1256,15 @@
     return out;
   }
 
-  function buildDocRow(doc) {
+  function buildDocRow(doc, q) {
     const row = document.createElement("div");
     row.className = "doc-row";
     const hasUrl = doc.url && doc.url.trim() !== "";
     row.innerHTML = `
-      <span class="doc-name">${escapeHtml(doc.name)}</span>
+      <span class="doc-name">${highlight(doc.name, q || "")}</span>
       ${hasUrl
         ? `<a class="doc-link" href="${escapeAttr(doc.url)}" target="_blank" rel="noopener noreferrer">Open <svg class="doc-link-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>`
-        : `<span class="doc-unset">Not configured</span>`}
+        : `<span class="doc-unset">Under construction</span>`}
     `;
     return row;
   }
@@ -1465,6 +1714,13 @@
     CONFIG.lastUpdated = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
     document.getElementById("config-data").textContent = JSON.stringify(CONFIG, null, 2);
+
+    // Save the page in its clean default state, not mid-search.
+    SEARCH_QUERY = "";
+    document.getElementById("search-input").value = "";
+    document.getElementById("search-status").textContent = "";
+    document.getElementById("search-clear").classList.remove("visible");
+
     render();
     closeAllAccordions();
     closeAdmin();
@@ -1477,7 +1733,16 @@
     document.getElementById("admin-categories").innerHTML = "";
     document.getElementById("grid").innerHTML = "";
 
-    const htmlString = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    // Browser extensions and the Filestack picker inject their own nodes into
+    // the live page. Pull them out of the snapshot so they don't accumulate in
+    // the saved file. We clone first so the running page is left untouched.
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll(
+      "scribe-shadow, [data-crx], #fs-loader-picker, .fsp-picker, " +
+      ".fsp-picker__background, [id^='__filestack'], grammarly-desktop-integration"
+    ).forEach(n => n.remove());
+
+    const htmlString = "<!DOCTYPE html>\n" + clone.outerHTML;
 
     // Rebuild through the render functions (not innerHTML) so click handlers
     // are reattached properly.
@@ -1505,19 +1770,33 @@
     if (e.key === "Escape") {
       closeNotificationModal();
       closeLogin();
+      // Escape also clears an active search, unless a modal was open.
+      const adminOpen = document.getElementById("admin-overlay").classList.contains("visible");
+      if (!adminOpen && SEARCH_QUERY) clearSearch();
+    }
+    // Ctrl/Cmd+K jumps to the search box.
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      const adminOpen = document.getElementById("admin-overlay").classList.contains("visible");
+      if (!adminOpen) {
+        e.preventDefault();
+        document.getElementById("search-input").focus();
+      }
     }
   });
+
+  function bindSearch() {
+    const input = document.getElementById("search-input");
+    input.addEventListener("input", () => runSearch(input.value));
+    // Some browsers fire "search" (not "input") when the native X is used.
+    input.addEventListener("search", () => runSearch(input.value));
+    document.getElementById("search-clear").addEventListener("click", clearSearch);
+  }
 
   document.addEventListener("DOMContentLoaded", () => {
     render();
     bindTopLevelFields();
+    bindSearch();
   });
 </script>
 
-
-<scribe-shadow id="crxjs-ext" data-crx="okfkdaglfjjjfefdcppliegebpoegaii" style="position: fixed; width: 0px; height: 0px; top: 0px; left: 0px; z-index: 2147483647; overflow: visible; visibility: visible; pointer-events: none;"></scribe-shadow><script id="fs-loader-picker" crossorigin="anonymous" charset="utf-8" async="true" src="https://static.filestackapi.com/picker/1.39.15/picker.js"></script>
-<script id="fs-loader-picker" crossorigin="anonymous" charset="utf-8" async="true" src="https://static.filestackapi.com/picker/1.39.15/picker.js"></script>
-<script id="fs-loader-picker" crossorigin="anonymous" charset="utf-8" async="true" src="https://static.filestackapi.com/picker/1.39.15/picker.js"></script>
-<script id="fs-loader-picker" crossorigin="anonymous" charset="utf-8" async="true" src="https://static.filestackapi.com/picker/1.39.15/picker.js"></script>
-<script id="fs-loader-picker" crossorigin="anonymous" charset="utf-8" async="true" src="https://static.filestackapi.com/picker/1.39.15/picker.js"></script>
-<script id="fs-loader-picker" crossorigin="anonymous" charset="utf-8" async="true" src="https://static.filestackapi.com/picker/1.39.15/picker.js"></script></body></html>
+</body></html>
