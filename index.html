@@ -1109,6 +1109,7 @@
     padding: 1.5rem; margin-bottom: 2rem;
   }
   .admin-section-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary); }
+  .field-hint { font-weight: 400; color: var(--text-muted); text-transform: none; letter-spacing: 0; }
 
   .admin-category-card {
     background: #fff; border: 1px solid var(--border-slate); border-radius: 12px;
@@ -1329,6 +1330,8 @@
 
     <div class="admin-page-fields">
       <div class="admin-section-title">Page Header &amp; Footer</div>
+      <label class="field-label" for="cfg-title">Page title <span class="field-hint">(browser tab and the big heading)</span></label>
+      <input class="text-input" id="cfg-title" type="text">
       <label class="field-label" for="cfg-subtitle">Subtitle</label>
       <input class="text-input" id="cfg-subtitle" type="text">
       <label class="field-label" for="cfg-announcement">Announcement / Instructions text</label>
@@ -1941,6 +1944,7 @@
   }
 
   function populateAdminForm() {
+    document.getElementById("cfg-title").value = CONFIG.pageTitle || "";
     document.getElementById("cfg-subtitle").value = CONFIG.pageSubtitle || "";
     document.getElementById("cfg-announcement").value = CONFIG.announcement || "";
     document.getElementById("cfg-footer").value = CONFIG.footerText || "";
@@ -2236,6 +2240,11 @@
   }
 
   function bindTopLevelFields() {
+    document.getElementById("cfg-title").addEventListener("input", e => {
+      CONFIG.pageTitle = e.target.value;
+      document.title = e.target.value;
+      document.getElementById("header-portal-title").textContent = e.target.value;
+    });
     document.getElementById("cfg-subtitle").addEventListener("input", e => CONFIG.pageSubtitle = e.target.value);
     document.getElementById("cfg-announcement").addEventListener("input", e => CONFIG.announcement = e.target.value);
     document.getElementById("cfg-footer").addEventListener("input", e => CONFIG.footerText = e.target.value);
