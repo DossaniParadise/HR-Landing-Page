@@ -20,6 +20,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Mulish:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <!-- =========================================================================
      CONFIG DATA
@@ -331,13 +334,39 @@
 }</script>
 
 <!-- =========================================================================
-     ADMIN CONFIG
-     Allowed admin logins. This is client-side only (visible to anyone who
-     views source) -- fine for keeping casual visitors out, not real security.
+     FIREBASE + ADMIN CONFIG
+
+     Links now live in Cloud Firestore, not in this file. Admins sign in with
+     real Firebase Authentication accounts and their edits save straight to the
+     database -- no more download/re-upload cycle.
+
+     The Firebase config below is public by design; every Firebase web app
+     ships it in the browser. Your data is protected by Firestore security
+     rules and Auth, NOT by hiding these values. See the setup notes at the
+     bottom of this file.
      ========================================================================= -->
 <script>
-  const ADMIN_USERS = ["itsupport@dossaniparadise.com", "deisy@dossaniparadise.com"];
-  const ADMIN_PASSWORD = "dpm6";
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBaW24qqrObO1YPS6Mnf4KFbQtV1ZoeKZA",
+    authDomain: "hr-portal-c144a.firebaseapp.com",
+    projectId: "hr-portal-c144a",
+    storageBucket: "hr-portal-c144a.firebasestorage.app",
+    messagingSenderId: "877459100218",
+    appId: "1:877459100218:web:da1e5312cf070b14d8db03"
+  };
+
+  // Where the site config lives: collection "site", document "config".
+  const FS_COLLECTION = "site";
+  const FS_DOC = "config";
+
+  // Only these accounts may write. This list is mirrored in the Firestore
+  // security rules -- the rules are what actually enforce it; this copy just
+  // gives a nicer error message before the request is sent.
+  const ADMIN_USERS = [
+    "itsupport@dossaniparadise.com",
+    "deisy@dossaniparadise.com",
+    "lisa@dossaniparadise.com"
+  ];
 
   // Filestack. This key is public by design (it ships in the HTML) -- the
   // same key used in the PayMi invoice tracker. Lock the app down in the
@@ -961,11 +990,45 @@
 
   .admin-saved-msg {
     display: none;
-    background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
     padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
     margin-bottom: 1.5rem;
+    background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
   }
   .admin-saved-msg.visible { display: block; }
+  .admin-saved-msg.ok  { background-color: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+  .admin-saved-msg.err { background-color: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+
+  .admin-user {
+    font-size: .78rem; font-weight: 700; color: var(--navy-700);
+    background: var(--navy-50); border: 1px solid var(--navy-100);
+    padding: .35rem .7rem; border-radius: 999px; white-space: nowrap;
+    align-self: center;
+  }
+
+  /* One-time setup / export block -- visually separate from daily editing. */
+  .setup-panel {
+    background: var(--gray-50); border: 1px dashed var(--navy-200);
+    border-radius: 12px; padding: 1.25rem; margin-bottom: 2rem;
+  }
+  .setup-note { font-size: .84rem; color: var(--text-muted); margin-bottom: .9rem; line-height: 1.5; }
+  .setup-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .setup-actions .btn { width: auto; padding: .55rem 1rem; font-size: .82rem; }
+
+  /* Live-data indicator in the footer. */
+  .data-source {
+    font-size: .7rem; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; padding: .18rem .55rem; border-radius: 999px;
+    border: 1px solid transparent; white-space: nowrap;
+  }
+  .data-source::before {
+    content: ""; display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; margin-right: .4rem; vertical-align: middle;
+    background: currentColor;
+  }
+  .ds-live    { color: #15803d; background: #f0fdf4; border-color: #bbf7d0; }
+  .ds-loading { color: var(--navy-700); background: var(--navy-50); border-color: var(--navy-100); }
+  .ds-empty   { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+  .ds-offline { color: var(--gray-500); background: var(--gray-100); border-color: var(--gray-200); }
 
   .admin-page-fields {
     background: #fff; border: 1px solid var(--border-slate); border-radius: 12px;
@@ -1126,6 +1189,7 @@
     </a>
     <div class="footer-right" style="display:flex; align-items:center; gap:1rem;">
       <span>Last Updated: <span class="date-indicator" id="footer-date-tag">August 2026</span></span>
+      <span class="data-source ds-loading" id="data-source">Connecting…</span>
       <button class="admin-entry" onclick="openLogin()">Admin Login</button>
     </div>
   </footer>
@@ -1154,7 +1218,7 @@
     <div id="login-error" class="error-text" style="display:none;">Incorrect email or password.</div>
     <div class="modal-btn-row">
       <button class="btn btn-secondary" onclick="closeLogin()">Cancel</button>
-      <button class="btn btn-blue" onclick="attemptLogin()">Log In</button>
+      <button class="btn btn-blue" id="login-submit" onclick="attemptLogin()">Log In</button>
     </div>
   </div>
 </div>
@@ -1164,13 +1228,27 @@
   <div class="admin-topbar">
     <div class="admin-topbar-title"><span class="plate mini"><span class="dpm">DPM</span></span> Admin Panel — Manage HR Resources</div>
     <div class="admin-topbar-actions">
-      <button class="btn btn-secondary" onclick="discardChanges()">Discard Changes</button>
+      <span class="admin-user" id="admin-user-label"></span>
+      <button class="btn btn-secondary" onclick="discardChanges()">Discard</button>
       <button class="btn btn-secondary" onclick="logoutAdmin()">Log Out</button>
-      <button class="btn btn-blue" onclick="saveAndDownload()">Save &amp; Download index.html</button>
+      <button class="btn btn-blue" id="btn-publish" onclick="publishToFirebase()">Publish to Firebase</button>
     </div>
   </div>
   <div class="admin-body">
-    <div class="admin-saved-msg" id="admin-saved-msg">Saved! A new index.html was downloaded — upload it to replace the live file.</div>
+    <div class="admin-saved-msg" id="admin-saved-msg"></div>
+
+    <div class="setup-panel">
+      <div class="admin-section-title">One-time setup &amp; file exports</div>
+      <p class="setup-note">
+        Edits publish straight to Firebase — you don't need to download or re-upload anything day to day.
+        These buttons are only for first-time migration and backups.
+      </p>
+      <div class="setup-actions">
+        <button class="btn btn-secondary" id="btn-migrate" onclick="migrateToFirebase()">Upload this file's links to Firebase</button>
+        <button class="btn btn-secondary" onclick="downloadCleanIndex()">Download clean index.html</button>
+        <button class="btn btn-secondary" onclick="downloadBackupIndex()">Download backup (with links)</button>
+      </div>
+    </div>
 
     <div class="admin-page-fields">
       <div class="admin-section-title">Page Header &amp; Footer</div>
@@ -1186,7 +1264,7 @@
 
     <div class="admin-footer-actions">
       <button class="btn btn-secondary" style="width:auto;" onclick="discardChanges()">Discard Changes</button>
-      <button class="btn btn-blue" style="width:auto;" onclick="saveAndDownload()">Save &amp; Download index.html</button>
+      <button class="btn btn-blue" style="width:auto;" onclick="publishToFirebase()">Publish to Firebase</button>
     </div>
   </div>
 </div>
@@ -1197,6 +1275,135 @@
   let CONFIG = JSON.parse(document.getElementById("config-data").textContent);
   const ORIGINAL_CONFIG_JSON = JSON.stringify(CONFIG);
   let isAdmin = false;
+
+  // =====================================================================
+  //  FIREBASE LAYER
+  //  The embedded config above is only a fallback used for the very first
+  //  paint and for when Firestore can't be reached. Once the live document
+  //  arrives it replaces CONFIG and the page re-renders.
+  // =====================================================================
+  let fbApp = null, fbAuth = null, fbDb = null, fbReady = false;
+  let liveFromFirebase = false;   // true once we've loaded the Firestore doc
+  let unsubscribeDoc = null;
+
+  function initFirebase() {
+    if (typeof firebase === "undefined") {
+      console.warn("Firebase SDK didn't load - running on the built-in copy of the links.");
+      setDataSource("offline");
+      return false;
+    }
+    try {
+      fbApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
+      fbAuth = firebase.auth();
+      fbDb = firebase.firestore();
+      fbReady = true;
+      return true;
+    } catch (e) {
+      console.error("Firebase init failed:", e);
+      setDataSource("offline");
+      return false;
+    }
+  }
+
+  // Live subscription: any admin's save shows up on everyone's page without
+  // a refresh, and we never have to poll.
+  function watchConfig() {
+    if (!fbReady) return;
+    setDataSource("loading");
+    unsubscribeDoc = fbDb.collection(FS_COLLECTION).doc(FS_DOC).onSnapshot(
+      (snap) => {
+        if (snap.exists) {
+          const data = snap.data();
+          if (data && Array.isArray(data.categories)) {
+            CONFIG = normalizeConfig(data);
+            liveFromFirebase = true;
+            setDataSource("live");
+            render();
+            if (document.getElementById("admin-overlay").classList.contains("visible")) {
+              populateAdminForm();
+            }
+            return;
+          }
+        }
+        // Document doesn't exist yet -> first run, before migration.
+        liveFromFirebase = false;
+        setDataSource("empty");
+      },
+      (err) => {
+        console.error("Firestore read failed:", err);
+        setDataSource("offline");
+      }
+    );
+  }
+
+  // Guard against a malformed document taking the page down.
+  function normalizeConfig(data) {
+    const safe = {
+      pageTitle: data.pageTitle || CONFIG.pageTitle,
+      pageSubtitle: data.pageSubtitle || CONFIG.pageSubtitle,
+      announcement: data.announcement || CONFIG.announcement,
+      footerText: data.footerText || CONFIG.footerText,
+      lastUpdated: data.lastUpdated || CONFIG.lastUpdated,
+      categories: []
+    };
+    (data.categories || []).forEach(c => {
+      safe.categories.push({
+        id: c.id || ("cat" + safe.categories.length),
+        title: c.title || "Untitled",
+        icon: c.icon || "📁",
+        description: c.description || "",
+        items: (c.items || []).map(cleanItem),
+        groups: (c.groups || []).map(g => ({
+          id: g.id || "group",
+          title: g.title || "Untitled",
+          items: (g.items || []).map(cleanItem)
+        }))
+      });
+    });
+    return safe;
+  }
+
+  // A missing/blank/deleted url is what makes a row read "Under construction".
+  function cleanItem(i) {
+    return {
+      name: (i && i.name) ? i.name : "Untitled",
+      url: (i && typeof i.url === "string") ? i.url.trim() : ""
+    };
+  }
+
+  function setDataSource(state) {
+    const el = document.getElementById("data-source");
+    if (!el) return;
+    const map = {
+      loading: ["Connecting…", "ds-loading"],
+      live:    ["Live", "ds-live"],
+      empty:   ["Not yet published", "ds-empty"],
+      offline: ["Offline copy", "ds-offline"],
+      saving:  ["Saving…", "ds-loading"]
+    };
+    const [label, cls] = map[state] || map.offline;
+    el.textContent = label;
+    el.className = "data-source " + cls;
+    el.title = {
+      loading: "Contacting Firebase…",
+      live: "Showing the current links from Firebase.",
+      empty: "No config in Firebase yet — showing this file's built-in copy. An admin needs to publish.",
+      offline: "Couldn't reach Firebase — showing this file's built-in copy.",
+      saving: "Writing to Firebase…"
+    }[state] || "";
+  }
+
+  // Write the whole config document. Small enough (well under Firestore's 1MB
+  // limit) that replacing it wholesale is simpler and safer than patching.
+  async function saveConfigToFirebase() {
+    if (!fbReady) throw new Error("Firebase isn't available in this browser session.");
+    if (!fbAuth.currentUser) throw new Error("You're signed out. Log in again.");
+    CONFIG.lastUpdated = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    const payload = JSON.parse(JSON.stringify(CONFIG));
+    payload.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    payload.updatedBy = fbAuth.currentUser.email;
+    await fbDb.collection(FS_COLLECTION).doc(FS_DOC).set(payload);
+  }
 
   let SEARCH_QUERY = "";
 
@@ -1577,19 +1784,47 @@
     overlay.classList.remove("visible");
     overlay.setAttribute("aria-hidden", "true");
   }
-  function attemptLogin() {
+  async function attemptLogin() {
     const email = document.getElementById("login-email").value.trim().toLowerCase();
     const pass = document.getElementById("login-password").value;
-    const validUser = ADMIN_USERS.map(u => u.toLowerCase()).includes(email);
-    if (validUser && pass === ADMIN_PASSWORD) {
-      isAdmin = true;
+    const errEl = document.getElementById("login-error");
+    const btn = document.getElementById("login-submit");
+
+    const showErr = (msg) => { errEl.textContent = msg; errEl.style.display = "block"; };
+    errEl.style.display = "none";
+
+    if (!email || !pass) { showErr("Enter your email and password."); return; }
+    if (!fbReady) { showErr("Can't reach Firebase. Check your connection and reload."); return; }
+    if (!ADMIN_USERS.map(u => u.toLowerCase()).includes(email)) {
+      showErr("That account isn't an authorized admin.");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Signing in…";
+    try {
+      await fbAuth.signInWithEmailAndPassword(email, pass);
+      // onAuthStateChanged opens the panel once the session is established.
       closeLogin();
-      openAdmin();
-    } else {
-      document.getElementById("login-error").style.display = "block";
+    } catch (e) {
+      const msgs = {
+        "auth/invalid-credential": "Incorrect email or password.",
+        "auth/wrong-password": "Incorrect email or password.",
+        "auth/user-not-found": "No admin account exists for that email yet.",
+        "auth/invalid-email": "That doesn't look like a valid email address.",
+        "auth/too-many-requests": "Too many attempts. Wait a minute and try again.",
+        "auth/network-request-failed": "Network error — check your connection.",
+        "auth/operation-not-allowed": "Email/Password sign-in isn't enabled in Firebase yet."
+      };
+      showErr(msgs[e.code] || ("Sign-in failed: " + (e.message || e.code)));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Log In";
     }
   }
-  function logoutAdmin() {
+
+  async function logoutAdmin() {
+    try { if (fbReady) await fbAuth.signOut(); } catch (e) { console.error(e); }
     isAdmin = false;
     closeAdmin();
   }
@@ -1905,62 +2140,187 @@
     document.getElementById("cfg-footer").addEventListener("input", e => CONFIG.footerText = e.target.value);
   }
 
-  function discardChanges() {
-    if (!confirm("Discard all unsaved changes and reload the original data?")) return;
+  // Discard reverts to what's actually published in Firebase, not to the copy
+  // baked into this file -- otherwise "discard" could silently roll the page
+  // back to whatever links were embedded when the file was last downloaded.
+  async function discardChanges() {
+    if (!confirm("Discard unsaved changes and reload the published version?")) return;
+    const msg = document.getElementById("admin-saved-msg");
+    if (fbReady && liveFromFirebase) {
+      try {
+        const snap = await fbDb.collection(FS_COLLECTION).doc(FS_DOC).get();
+        if (snap.exists) {
+          CONFIG = normalizeConfig(snap.data());
+          populateAdminForm();
+          render();
+          msg.className = "admin-saved-msg visible ok";
+          msg.textContent = "Reloaded the published version from Firebase.";
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     CONFIG = JSON.parse(ORIGINAL_CONFIG_JSON);
     populateAdminForm();
     render();
+    msg.className = "admin-saved-msg visible ok";
+    msg.textContent = "Reloaded this file's built-in copy.";
   }
 
-  function saveAndDownload() {
-    CONFIG.lastUpdated = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  // ---------- Publishing ----------
+  // Primary action: write straight to Firestore. No file download, no
+  // re-upload -- every visitor sees the change immediately.
+  async function publishToFirebase() {
+    const msg = document.getElementById("admin-saved-msg");
+    const btn = document.getElementById("btn-publish");
+    btn.disabled = true;
+    btn.textContent = "Publishing…";
+    setDataSource("saving");
+    try {
+      await saveConfigToFirebase();
+      liveFromFirebase = true;
+      setDataSource("live");
+      msg.className = "admin-saved-msg visible ok";
+      msg.textContent = "Published. Everyone sees these links now — nothing to upload.";
+      render();
+    } catch (e) {
+      console.error(e);
+      setDataSource(liveFromFirebase ? "live" : "offline");
+      msg.className = "admin-saved-msg visible err";
+      msg.textContent = "Couldn't publish: " + friendlyWriteError(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Publish to Firebase";
+    }
+  }
 
-    document.getElementById("config-data").textContent = JSON.stringify(CONFIG, null, 2);
+  function friendlyWriteError(e) {
+    if (!e) return "unknown error.";
+    if (e.code === "permission-denied")
+      return "permission denied. Check the Firestore security rules allow this email to write.";
+    if (e.code === "unavailable")
+      return "Firebase unreachable. Check your connection.";
+    if (e.code === "unauthenticated")
+      return "your session expired. Log out and back in.";
+    return (e.message || e.code || "unknown error.");
+  }
 
-    // Save the page in its clean default state, not mid-search.
+  // One-time migration: push the links currently baked into this file up to
+  // Firestore, so you can then ship a copy of the page with no links in it.
+  async function migrateToFirebase() {
+    const total = CONFIG.categories.reduce(
+      (n, c) => n + collectDocs(c).length, 0);
+    const linked = CONFIG.categories.reduce(
+      (n, c) => n + collectDocs(c).filter(d => d.url && d.url.trim()).length, 0);
+
+    if (!confirm(
+      "Upload this page's current content to Firebase?\n\n" +
+      total + " documents (" + linked + " with links)\n\n" +
+      "This OVERWRITES whatever is in Firebase right now. Use it once when " +
+      "first setting up, or to restore from this file."
+    )) return;
+
+    const msg = document.getElementById("admin-saved-msg");
+    const btn = document.getElementById("btn-migrate");
+    btn.disabled = true;
+    btn.textContent = "Uploading…";
+    setDataSource("saving");
+    try {
+      await saveConfigToFirebase();
+      liveFromFirebase = true;
+      setDataSource("live");
+      msg.className = "admin-saved-msg visible ok";
+      msg.textContent = "Uploaded " + total + " documents (" + linked +
+        " links) to Firebase. Verify them below, then use \u201cDownload clean index.html\u201d.";
+    } catch (e) {
+      console.error(e);
+      setDataSource(liveFromFirebase ? "live" : "offline");
+      msg.className = "admin-saved-msg visible err";
+      msg.textContent = "Upload failed: " + friendlyWriteError(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Upload this file's links to Firebase";
+    }
+  }
+
+  // Export a copy of the page with the links stripped out. Structure and
+  // document names stay as an offline skeleton so that if Firebase is ever
+  // unreachable the page still lists everything as "Under construction"
+  // instead of rendering blank.
+  function downloadCleanIndex() {
+    if (!liveFromFirebase) {
+      if (!confirm(
+        "Firebase hasn't confirmed your links are saved yet.\n\n" +
+        "Downloading now could give you a file with no links AND no backup. " +
+        "Continue anyway?"
+      )) return;
+    }
+
+    const skeleton = JSON.parse(JSON.stringify(CONFIG));
+    let stripped = 0;
+    skeleton.categories.forEach(c => {
+      (c.items || []).forEach(i => { if (i.url) { i.url = ""; stripped++; } });
+      (c.groups || []).forEach(g => g.items.forEach(i => { if (i.url) { i.url = ""; stripped++; } }));
+    });
+    skeleton.lastUpdated = CONFIG.lastUpdated;
+
+    exportHtml(JSON.stringify(skeleton, null, 2), "index.html");
+
+    const msg = document.getElementById("admin-saved-msg");
+    msg.className = "admin-saved-msg visible ok";
+    msg.textContent = "Downloaded a clean index.html with " + stripped +
+      " links removed. It pulls everything live from Firebase — upload it once and you're done.";
+  }
+
+  // Full backup: same page, links still embedded. Handy as a rollback file.
+  function downloadBackupIndex() {
+    exportHtml(JSON.stringify(CONFIG, null, 2), "index-backup-with-links.html");
+    const msg = document.getElementById("admin-saved-msg");
+    msg.className = "admin-saved-msg visible ok";
+    msg.textContent = "Downloaded a backup copy with all links still embedded.";
+  }
+
+  // Shared snapshot routine used by both download buttons.
+  function exportHtml(configJson, filename) {
+    const prevConfigText = document.getElementById("config-data").textContent;
+    document.getElementById("config-data").textContent = configJson;
+
     SEARCH_QUERY = "";
     document.getElementById("search-input").value = "";
     document.getElementById("search-status").textContent = "";
     document.getElementById("search-clear").classList.remove("visible");
 
-    render();
     closeAllAccordions();
-    closeAdmin();
-    closeLogin();
-    closeNotificationModal();
-
-    // The snapshot below captures live DOM, so blank out anything the page
-    // rebuilds on load. Without this, each save bakes in the previous save's
-    // admin form and tiles, and the file grows every time.
     document.getElementById("admin-categories").innerHTML = "";
     document.getElementById("grid").innerHTML = "";
 
     // Browser extensions and the Filestack picker inject their own nodes into
-    // the live page. Pull them out of the snapshot so they don't accumulate in
-    // the saved file. We clone first so the running page is left untouched.
+    // the live page. Strip them from the snapshot so they don't accumulate.
     const clone = document.documentElement.cloneNode(true);
     clone.querySelectorAll(
       "scribe-shadow, [data-crx], #fs-loader-picker, .fsp-picker, " +
       ".fsp-picker__background, [id^='__filestack'], grammarly-desktop-integration"
     ).forEach(n => n.remove());
+    const adminOverlay = clone.querySelector("#admin-overlay");
+    if (adminOverlay) adminOverlay.classList.remove("visible");
 
     const htmlString = "<!DOCTYPE html>\n" + clone.outerHTML;
 
-    // Rebuild through the render functions (not innerHTML) so click handlers
-    // are reattached properly.
+    // Restore the running page.
+    document.getElementById("config-data").textContent = prevConfigText;
     render();
+    populateAdminForm();
+
     const blob = new Blob([htmlString], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "index.html";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
-    openAdmin();
-    document.getElementById("admin-saved-msg").classList.add("visible");
   }
 
   // ---------- Global listeners ----------
@@ -1995,10 +2355,101 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    // Paint immediately from the embedded copy so the page is never blank,
+    // then let Firebase overwrite it as soon as the live doc arrives.
     render();
     bindTopLevelFields();
     bindSearch();
+
+    if (initFirebase()) {
+      watchConfig();
+
+      // Keeps the admin panel in step with the real session: a refresh while
+      // signed in reopens the panel, and an expired token closes it.
+      fbAuth.onAuthStateChanged((user) => {
+        const authorized = !!user && ADMIN_USERS
+          .map(u => u.toLowerCase())
+          .includes((user.email || "").toLowerCase());
+
+        isAdmin = authorized;
+        const label = document.getElementById("admin-user-label");
+
+        if (authorized) {
+          if (label) label.textContent = user.email;
+          openAdmin();
+        } else {
+          if (label) label.textContent = "";
+          closeAdmin();
+          // Signed in with a non-admin account -- don't leave them stranded.
+          if (user) {
+            fbAuth.signOut();
+            alert("That account isn't authorized to edit this page.");
+          }
+        }
+      });
+    }
   });
 </script>
 
+
+<!-- ============================================================================
+     FIREBASE SETUP CHECKLIST  (project: hr-portal-c144a)
+
+     1. FIRESTORE DATABASE
+        Firebase console > Build > Firestore Database > Create database.
+        Choose "Start in production mode". Pick the region closest to Texas
+        (nam5 / us-central). Do NOT use Realtime Database.
+
+     2. SECURITY RULES
+        Firestore Database > Rules tab. Replace everything with:
+
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            match /site/config {
+              allow read: if true;
+              allow write: if request.auth != null
+                && request.auth.token.email in [
+                     'itsupport@dossaniparadise.com',
+                     'deisy@dossaniparadise.com',
+                     'lisa@dossaniparadise.com'
+                   ];
+            }
+            match /{document=**} {
+              allow read, write: if false;
+            }
+          }
+        }
+
+        Press Publish. This is what actually protects your data: anyone may
+        read the links (it's a public page), only those three accounts may write.
+
+     3. AUTHENTICATION
+        Build > Authentication > Get started > Sign-in method >
+        enable "Email/Password". Then Users tab > Add user, three times:
+           itsupport@dossaniparadise.com
+           deisy@dossaniparadise.com
+           lisa@dossaniparadise.com
+        NOTE: Firebase requires passwords of at least 6 characters, so the old
+        "dpm6" is rejected. Set the same longer password on all three accounts,
+        or give each person their own -- Firebase tracks them separately, and
+        each save is stamped with the email that made it.
+        Passwords live in Firebase Auth only. Never put one in this file.
+
+     4. AUTHORIZED DOMAINS
+        Authentication > Settings > Authorized domains > Add domain.
+        Add wherever this page is hosted, e.g. dossaniparadise.github.io
+        (localhost is already allowed). Sign-in fails without this.
+
+     5. FIRST RUN
+        Open the page, log in, and press "Upload this file's links to
+        Firebase". Confirm the footer pill turns green and reads LIVE, and
+        that the links still work. Then press "Download clean index.html"
+        and upload that file to your host. From then on, editing in the admin
+        panel and pressing "Publish to Firebase" updates the live site with
+        no file uploads at all.
+
+     Hosting is NOT required -- declining it was fine. This page can stay on
+     GitHub Pages and still use Firestore + Auth.
+     ============================================================================ -->
 </body></html>
